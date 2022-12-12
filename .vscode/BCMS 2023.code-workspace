@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.ejs": "html",
+			"*.sql": "sql",
+			"*.swig": "html",
+			"filesystem": "cpp"
+		}
+	}
+}
