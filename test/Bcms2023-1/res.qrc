@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>resources/image/icon/action/mActionAddOgrLayer.svg</file>
+        <file>asdfsaf.png</file>
+    </qresource>
+</RCC>

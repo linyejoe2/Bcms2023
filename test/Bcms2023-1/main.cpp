@@ -1,5 +1,8 @@
-// #include "mainwindow.h"
 #define _USE_MATH_DEFINES
+#include "bcmsmainwindow.h"
+
+
+#include <QApplication>
 
 #include <QMainWindow>
 #include <QtWidgets/QApplication>
@@ -13,8 +16,9 @@
 
 int main(int argc, char *argv[])
 {
+    QApplication a(argc, argv);
+    BcmsMainWindow w;
 
-    QgsApplication a(argc, argv, true); // 初始化程式
     QMainWindow main_window;
 
     QgsMapCanvas map_canvas;                  // 實例化畫布
@@ -23,7 +27,7 @@ int main(int argc, char *argv[])
     map_canvas.setExtent(layer.extent());
     map_canvas.refreshAllLayers(); // 繪製
 
-    main_window.setCentralWidget(&map_canvas);
-    main_window.show();
+    w.setCentralWidget(&map_canvas);
+    w.show();
     return a.exec();
 }
