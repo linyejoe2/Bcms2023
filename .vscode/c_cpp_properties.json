@@ -1,30 +1,20 @@
 {
     "configurations": [
         {
-            "name": "Win32",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "C:\\Qt\\5.12.12\\msvc2017_64\\bin\\*",
-                "C:\\Qt\\Tools\\QtCreator\\bin\\*"
-            ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "windowsSdkVersion": "10.0.17763.0",
-            "compilerPath": "D:/Program Files (x86)/Microsoft Visual Studio/2017/Enterprise/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "windows-msvc-x64",
-            "compileCommands": "${workspaceFolder}/test/build-Bcms2023-2-Desktop_Qt_5_12_12_MSVC2017_64bit-Release/.qtc_clangd/compile_commands.json"
-        },
-        {
             "name": "Qt",
             "includePath": [
-                "${workspaceFolder}/test/build-Bcms2023-2-Desktop_Qt_5_12_12_MSVC2017_64bit-Release/.qtc_clangd/compile_commands.json",
-                "${workspaceFolder}/**",
-                "C:/Qt/5.12.12/**"
+                "${workspaceFolder}/test/**",
+                "C:/Qt/5.12.12/msvc2017_64/bin",
+                "C:/Qt/5.12.12/msvc2017_64/include/**",
+                "D:/OSGeo4W/include",
+                "D:/OSGeo4W/apps/Qt5/include",
+                "D:/OSGeo4W/apps/Qt5/include/QtCore",
+                "D:/OSGeo4W/apps/Qt5/include/QtWidgets",
+                "D:/OSGeo4W/apps/Qt5/include/QtXml",
+                "D:/OSGeo4W/apps/Qt5/include/QtGui",
+                "D:/OSGeo4W/apps/Qt5/lib",
+                "D:/OSGeo4W/apps/qgis-ltr/include",
+                "D:/OSGeo4W/apps/qgis-ltr/lib"
             ],
             "defines": [
                 "_DEBUG",

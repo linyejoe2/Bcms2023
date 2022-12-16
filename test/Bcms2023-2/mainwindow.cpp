@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
 	this->setCentralWidget(mapCanvas);
 	ui->LayersList->setWidget(layerList);
 
-	//	connections
+	// connections
 	connect(ui->actionAdd_Vector, SIGNAL(triggered(bool)), this, SLOT(addVectorLayers()));
 	//	connect(ui.actionAdd_Vector, SIGNAL( triggered()) ), this, SLOT(addV() ));
 }
@@ -75,7 +75,7 @@ void MainWindow::initLayerTreeView(){
 	model->setAutoCollapseLegendNodes( 10 );
 	layerList->setModel( model );
 
-	// 连接地图画布和图层管理器
+	// 連接畫布和圖層列表
 	layerListBridge = new QgsLayerTreeMapCanvasBridge( QgsProject::instance()->layerTreeRoot(), mapCanvas, this );
 	connect( QgsProject::instance(), SIGNAL( writeProject( QDomDocument& ) ), layerListBridge, SLOT( writeProject( QDomDocument& ) ) );
 	connect( QgsProject::instance(), SIGNAL( readProject( QDomDocument ) ), layerListBridge, SLOT( readProject( QDomDocument ) ) );
