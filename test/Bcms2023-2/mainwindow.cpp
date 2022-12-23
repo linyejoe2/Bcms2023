@@ -16,6 +16,7 @@
 #include <QLineEdit>
 #include <QToolButton>
 #include <QMargins>
+#include <qtextcodec.h>
 
 // QGIS
 #include <qgsvectorlayer.h>
@@ -29,8 +30,18 @@
 #include <qgslayertreeviewdefaultactions.h>
 #include <qgis.h>
 
-#include <qgspallabeling.h>					// layer label setting
-#include <qgsvectorlayerlabeling.h> // layer label setting
+// layer label setting
+#include <qgspallabeling.h>
+#include <qgsvectorlayerlabeling.h>
+// END of layer label setting
+
+// layer symbol setting
+#include <qgsmarkersymbollayer.h>
+#include <qgssymbol.h>
+#include <qgsfillsymbol.h>
+#include <qgsfillsymbollayer.h>
+#include <qgssinglesymbolrenderer.h>
+// END of layer symbol setting
 
 #include "./layertreeviewmenuprovider.h"
 
@@ -66,7 +77,108 @@ MainWindow::~MainWindow()
 
 void MainWindow::setDemo()
 {
-	// import land.
+	// layerOptions.
+	const QgsVectorLayer::LayerOptions layerOptions{QgsProject::instance()->transformContext()};
+
+	// 1. import land.
+	QgsVectorLayer *landLayer = new QgsVectorLayer(
+			"./temp/400_0044_land.json",
+			QStringLiteral("地籍"),
+			"ogr",
+			layerOptions);
+
+	// 1-1. set land symbol to blue padding and transparent fill.
+	QgsSimpleFillSymbolLayer *landSymbolLayer = new QgsSimpleFillSymbolLayer();
+	landSymbolLayer->setStrokeColor(Qt::blue);
+	landSymbolLayer->setColor(Qt::transparent);
+
+	QgsFillSymbol *fillSymbol = new QgsFillSymbol();
+	fillSymbol->changeSymbolLayer(0, landSymbolLayer);
+
+	landLayer->setRenderer(new QgsSingleSymbolRenderer(fillSymbol));
+	// END of set land symbol
+
+	// 1-2. set land label to land-no
+	QgsPalLayerSettings landLayerLabelSetting;
+	landLayerLabelSetting.fieldName = landLayer->fields()[0].name();
+	landLayerLabelSetting.drawLabels = true;
+	landLayerLabelSetting.centroidWhole = true;
+
+	landLayer->setLabeling(new QgsVectorLayerSimpleLabeling(landLayerLabelSetting));
+	landLayer->setLabelsEnabled(true);
+	// END of set land label
+
+	addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("建築物"), BU);
+	addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("法定騎樓"), AL);
+	addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("法定空地"), BA);
+
+	QgsProject::instance()
+			->addMapLayer(landLayer);
+	mapCanvasLayerSet.append(landLayer);
+	mapCanvas->setExtent(landLayer->extent());
+	mapCanvas->setLayers(mapCanvasLayerSet);
+	mapCanvas->setVisible(true);
+	mapCanvas->freeze(false);
+	mapCanvas->refresh();
+}
+
+void MainWindow::addVectorLayers(QString filePath, QString DisplayName, LayerTypes layerTypes)
+{
+	// layerOptions.
+	const QgsVectorLayer::LayerOptions layerOptions{QgsProject::instance()->transformContext()};
+
+	// 1. import layer.
+	QgsVectorLayer *layer = new QgsVectorLayer(
+			filePath,
+			DisplayName,
+			"ogr",
+			layerOptions);
+
+	QgsSimpleFillSymbolLayer *landSymbolLayer = new QgsSimpleFillSymbolLayer();
+	QgsFillSymbol *fillSymbol = new QgsFillSymbol();
+	QgsPalLayerSettings layerLabelSetting;
+
+	// 2. layer setting.
+	switch (layerTypes)
+	{
+	case BU:
+		layer->setSubsetString("\"layer\" = 'BU'");
+
+		landSymbolLayer->setColor(Qt::red);
+		fillSymbol->changeSymbolLayer(0, landSymbolLayer);
+		layer->setRenderer(new QgsSingleSymbolRenderer(fillSymbol));
+
+		layerLabelSetting.fieldName = layer->fields()[0].name();
+		layerLabelSetting.drawLabels = true;
+		layerLabelSetting.centroidWhole = true;
+		layer->setLabeling(new QgsVectorLayerSimpleLabeling(layerLabelSetting));
+		layer->setLabelsEnabled(true);
+		break;
+	case BA:
+		layer->setSubsetString("\"layer\" = 'BA'");
+
+		landSymbolLayer->setColor(Qt::darkGreen);
+		fillSymbol->changeSymbolLayer(0, landSymbolLayer);
+		layer->setRenderer(new QgsSingleSymbolRenderer(fillSymbol));
+		break;
+	case AL:
+		layer->setSubsetString("\"layer\" = 'AL'");
+
+		landSymbolLayer->setColor(Qt::yellow);
+		fillSymbol->changeSymbolLayer(0, landSymbolLayer);
+		layer->setRenderer(new QgsSingleSymbolRenderer(fillSymbol));
+		break;
+	default:
+		break;
+	}
+
+	QgsProject::instance()->addMapLayer(layer);
+	mapCanvasLayerSet.append(layer);
+	mapCanvas->setExtent(layer->extent());
+	mapCanvas->setLayers(mapCanvasLayerSet);
+	mapCanvas->setVisible(true);
+	mapCanvas->freeze(false);
+	mapCanvas->refresh();
 }
 
 void MainWindow::addVectorLayers()
@@ -74,8 +186,10 @@ void MainWindow::addVectorLayers()
 	QString filename = QFileDialog::getOpenFileName(this, tr("open vector"), "", "*.shp, *.json");
 	QStringList temp = filename.split(QDir::separator());
 	QString basename = temp.at(temp.size() - 1);
-	auto layerOptions = new QgsVectorLayer::LayerOptions(true, false);
-	QgsVectorLayer *vecLayer = new QgsVectorLayer(filename, basename, "ogr", *layerOptions);
+	// auto layerOptions = new QgsVectorLayer::LayerOptions(true, false);
+
+	const QgsVectorLayer::LayerOptions layerOptions{QgsProject::instance()->transformContext()};
+	QgsVectorLayer *vecLayer = new QgsVectorLayer(filename, basename, "ogr", layerOptions);
 	if (!vecLayer->isValid())
 	{
 		QMessageBox::critical(this, "error", "layer is invalid");
@@ -83,16 +197,13 @@ void MainWindow::addVectorLayers()
 	}
 
 	auto list = vecLayer->attributeList();
-	qDebug() << "randy 1: " << vecLayer->fields()[0].name();
-	qDebug() << "randy 2: " << vecLayer->fields()[0].alias();
-	qDebug() << "randy 3: " << vecLayer->fields()[0].comment();
 	QgsPalLayerSettings layerSetting;
-	layerSetting.drawLabels = true;												 // set show label or not.
-	layerSetting.fieldName = vecLayer->fields()[1].name(); // set show witch property.
-	layerSetting.centroidWhole = true;										 // set label show at center
+	// layerSetting.drawLabels = true;												 // set show label or not.
+	// layerSetting.fieldName = vecLayer->fields()[1].name(); // set show witch property.
+	// layerSetting.centroidWhole = true;										 // set label show at center
 
-	vecLayer->setLabeling(new QgsVectorLayerSimpleLabeling(layerSetting));
-	vecLayer->setLabelsEnabled(true);
+	// vecLayer->setLabeling(new QgsVectorLayerSimpleLabeling(layerSetting));
+	// vecLayer->setLabelsEnabled(true);
 	// qDebug() << "randy list: " << list.takeFirst();
 	// qDebug() << "linyejoe2";
 

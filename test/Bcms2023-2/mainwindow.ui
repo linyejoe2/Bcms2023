@@ -81,6 +81,12 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionPan_Map"/>
+   <addaction name="actionZoom_In"/>
+   <addaction name="actionZoom_Out"/>
+   <addaction name="actionZoom_Full_Map"/>
+   <addaction name="actionZoom_Selected"/>
+   <addaction name="actionSelect_Rectangle"/>
   </widget>
   <action name="actionAdd_Vector">
    <property name="icon">
@@ -95,11 +101,75 @@
    </property>
   </action>
   <action name="actionPan_Map">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionPan.svg</normaloff>:/img/mActionPan.svg</iconset>
+   </property>
    <property name="text">
     <string>Pan Map</string>
    </property>
    <property name="toolTip">
     <string>移動地圖</string>
+   </property>
+  </action>
+  <action name="actionZoom_In">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionZoomIn.svg</normaloff>:/img/mActionZoomIn.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="toolTip">
+    <string>縮小地圖</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionZoomOut.svg</normaloff>:/img/mActionZoomOut.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="toolTip">
+    <string>放大地圖</string>
+   </property>
+  </action>
+  <action name="actionZoom_Full_Map">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionZoomFullExtent.svg</normaloff>:/img/mActionZoomFullExtent.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom Full Map</string>
+   </property>
+   <property name="toolTip">
+    <string>縮放至全地圖</string>
+   </property>
+  </action>
+  <action name="actionZoom_Selected">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionZoomToSelected.svg</normaloff>:/img/mActionZoomToSelected.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom Selected</string>
+   </property>
+   <property name="toolTip">
+    <string>縮放到選擇的資料</string>
+   </property>
+  </action>
+  <action name="actionSelect_Rectangle">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionSelectRectangle.svg</normaloff>:/img/mActionSelectRectangle.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Select Rectangle</string>
+   </property>
+   <property name="toolTip">
+    <string>選擇圖層</string>
    </property>
   </action>
  </widget>

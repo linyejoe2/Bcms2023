@@ -1,10 +1,11 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #define _USE_MATH_DEFINES
 
 #include <QMainWindow>
 
 #include <QList>
+#include <QString>
 
 // QGis include
 #include <qgsmapcanvas.h>
@@ -29,9 +30,23 @@ public:
 
 	void addDockWidget(Qt::DockWidgetArea area, QDockWidget *dockwidget);
 
+	enum LayerTypes
+	{
+		SRL,
+		RE,
+		AL,
+		IC,
+		BU,
+		FA,
+		NR,
+		BA,
+		RA
+	};
+
 public slots:
 	//! 添加矢量圖層
 	void addVectorLayers();
+	void addVectorLayers(QString filePath, QString DisplayName, LayerTypes layerTypes);
 
 	void autoSelectAddedLayer(QList<QgsMapLayer *> layers);
 
