@@ -2,6 +2,8 @@
 #define LAYERTREEVIEWMENUPROVIDER_H
 #define _USE_MATH_DEFINES
 
+#include <QObject>
+
 #include <qgslayertreeview.h>
 #include <qgsmapcanvas.h>
 #include <qgsmaplayer.h>
@@ -17,7 +19,7 @@ struct LegendLayerAction
 	QList<QgsMapLayer *> layers;
 };
 
-class LayerTreeViewMenuProvider : public QgsLayerTreeViewMenuProvider
+class LayerTreeViewMenuProvider : public QObject, public QgsLayerTreeViewMenuProvider
 {
 	Q_OBJECT
 public:

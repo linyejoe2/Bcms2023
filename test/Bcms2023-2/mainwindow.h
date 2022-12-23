@@ -27,13 +27,13 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 
+	void addDockWidget(Qt::DockWidgetArea area, QDockWidget *dockwidget);
+
 public slots:
-	/**
-	 *  添加矢量圖層
-	 *
-	 * @return void
-	 **/
+	//! 添加矢量圖層
 	void addVectorLayers();
+
+	void autoSelectAddedLayer(QList<QgsMapLayer *> layers);
 
 private:
 	Ui::MainWindow *ui;
@@ -42,7 +42,8 @@ private:
 	QgsLayerTreeView *layerList;									// 圖層列表
 	QgsLayerTreeMapCanvasBridge *layerListBridge; // 圖層列表資料橋接
 
-	QDockWidget *layerOrderDock;
+	QDockWidget *layerListDock;	 // 圖層列表
+	QDockWidget *layerOrderDock; // 圖層右鍵選單
 
 	QList<QgsMapLayer *> mapCanvasLayerSet; // 地图画布所用的图层集合
 
@@ -52,5 +53,9 @@ private:
 	 * @return void
 	 **/
 	void initLayerTreeView();
+
+	// ! 設定成樣板模式
+	void setDemo();
 };
+
 #endif // MAINWINDOW_H
