@@ -1,6 +1,4 @@
 // #include "mainwindow.h"
-#define _USE_MATH_DEFINES
-
 #include <QMainWindow>
 #include <QtWidgets/QApplication>
 #include <QLocale>

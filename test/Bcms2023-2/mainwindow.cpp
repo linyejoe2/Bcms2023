@@ -19,6 +19,7 @@
 #include <qtextcodec.h>
 
 // QGIS
+#include <qgsapplication.h>
 #include <qgsvectorlayer.h>
 #include <qgsrasterlayer.h>
 #include <qgsproject.h>
@@ -29,6 +30,9 @@
 #include <qgslayertreeregistrybridge.h>
 #include <qgslayertreeviewdefaultactions.h>
 #include <qgis.h>
+#include <qshortcut.h>
+#include <qgsuserinputwidget.h>
+#include <qgsmessagebar.h>
 
 // layer label setting
 #include <qgspallabeling.h>
@@ -41,9 +45,14 @@
 #include <qgsfillsymbol.h>
 #include <qgsfillsymbollayer.h>
 #include <qgssinglesymbolrenderer.h>
+#include <qgsadvanceddigitizingdockwidget.h>
 // END of layer symbol setting
 
-#include "./layertreeviewmenuprovider.h"
+#include "layertreeviewmenuprovider.h"
+#include "maptools/qgsappmaptools.h"
+
+// 單例模式指向自己
+MainWindow *MainWindow::sInstance = nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
 		: QMainWindow(parent), ui(new Ui::MainWindow)
@@ -56,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	// 實例化並設定圖層管理器
 	layerList = new QgsLayerTreeView(this);
+	layerList->setObjectName(QStringLiteral("theLayerTreeView"));
 	initLayerTreeView();
 
 	// layout
@@ -65,8 +75,44 @@ MainWindow::MainWindow(QWidget *parent)
 	// DEMO use
 	setDemo();
 
+	// msg bar
+	QWidget *centralWidget = this->centralWidget();
+	mInfoBar = new QgsMessageBar(centralWidget);
+	layerList->setMessageBar(mInfoBar);
+
+	// Advanced Digitizing dock
+	mAdvancedDigitizingDockWidget = new QgsAdvancedDigitizingDockWidget(mapCanvas, this);
+	mAdvancedDigitizingDockWidget->setWindowTitle(tr("Advanced Digitizing"));
+	mAdvancedDigitizingDockWidget->setObjectName(QStringLiteral("AdvancedDigitizingTools"));
+
+	QShortcut *showAdvancedDigitizingDock = new QShortcut(QKeySequence(tr("Ctrl+4")), this);
+	connect(showAdvancedDigitizingDock, &QShortcut::activated, mAdvancedDigitizingDockWidget, &QgsDockWidget::toggleUserVisible);
+	showAdvancedDigitizingDock->setObjectName(QStringLiteral("ShowAdvancedDigitizingPanel"));
+	showAdvancedDigitizingDock->setWhatsThis(tr("Show Advanced Digitizing Panel"));
+	mMapTools = std::make_unique<QgsAppMapTools>(mapCanvas, mAdvancedDigitizingDockWidget);
+	addDockWidget(Qt::LeftDockWidgetArea, mAdvancedDigitizingDockWidget);
+	mAdvancedDigitizingDockWidget->show();
+
+	// User Input Dock Widget
+	mUserInputDockWidget = new QgsUserInputWidget(mapCanvas);
+	mUserInputDockWidget->setObjectName(QStringLiteral("UserInputDockWidget"));
+	mUserInputDockWidget->setAnchorWidget(mapCanvas);
+	mUserInputDockWidget->setAnchorWidgetPoint(QgsFloatingWidget::TopRight);
+	mUserInputDockWidget->setAnchorPoint(QgsFloatingWidget::TopRight);
+
 	// connections
 	connect(ui->actionAdd_Vector, SIGNAL(triggered(bool)), this, SLOT(addVectorLayers()));
+	connect(ui->actionPan_Map, SIGNAL(triggered()), this, SLOT(panMap()));
+	connect(ui->actionZoom_In, SIGNAL(triggered()), this, SLOT(zoomIn()));
+	connect(ui->actionZoom_Out, SIGNAL(triggered()), this, SLOT(zoomOut()));
+	connect(ui->actionZoom_To_Selected, SIGNAL(triggered()), this, SLOT(zoomToSelected()));
+	connect(ui->actionSelect_Rectangle, SIGNAL(triggered()), this, SLOT(selectFeatures()));
+	connect(ui->actionZoom_Full_Map, SIGNAL(triggered()), this, SLOT(zoomFull()));
+	connect(layerList, SIGNAL(currentLayerChanged(QgsMapLayer *)), this, SLOT(changeSelectLayer(QgsMapLayer *)));
+	connect(layerList->layerTreeModel()->rootGroup(), &QgsLayerTreeNode::visibilityChanged,
+					this, &MainWindow::markDirty);
+	// connect(layerList->selectionModel(), SIGNAL(QItemSelectionModel::selectionChanged()), this, SLOT(changeSelectLayer()));
+
 	//	connect(ui.actionAdd_Vector, SIGNAL( triggered()) ), this, SLOT(addV() ));
 }
 
@@ -75,8 +121,114 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+QgsMessageBar *MainWindow::messageBar()
+{
+	// Q_ASSERT( mInfoBar );
+	return mInfoBar;
+}
+
+void MainWindow::zoomFull()
+{
+	mapCanvas->zoomToProjectExtent();
+}
+
+void MainWindow::markDirty()
+{
+	qDebug() << "linyejoe2: ";
+	// notify the project that there was a change
+	QgsProject::instance()->setDirty(true);
+	// hideDeselectedLayers();
+}
+
+// void QgisApp::hideAllLayers()
+// {
+//   QgsDebugMsgLevel( QStringLiteral( "hiding all layers!" ), 3 );
+
+//   const auto constChildren = mLayerTreeView->layerTreeModel()->rootGroup()->children();
+//   for ( QgsLayerTreeNode *node : constChildren )
+//   {
+//     node->setItemVisibilityCheckedRecursive( false );
+//   }
+// }
+
+// void QgisApp::showAllLayers()
+// {
+//   QgsDebugMsgLevel( QStringLiteral( "Showing all layers!" ), 3 );
+//   mLayerTreeView->layerTreeModel()->rootGroup()->setItemVisibilityCheckedRecursive( true );
+// }
+
+void MainWindow::hideDeselectedLayers()
+{
+	QList<QgsLayerTreeLayer *> selectedLayerNodes = layerList->selectedLayerNodes();
+
+	const auto constFindLayers = layerList->layerTreeModel()->rootGroup()->findLayers();
+	for (QgsLayerTreeLayer *nodeLayer : constFindLayers)
+	{
+		if (selectedLayerNodes.contains(nodeLayer))
+			continue;
+		nodeLayer->setItemVisibilityChecked(false);
+	}
+}
+
+void MainWindow::changeSelectLayer(QgsMapLayer *layer)
+{
+	if (!layer)
+	{
+		return;
+	}
+	if (mapCanvas)
+	{
+		mapCanvas->setCurrentLayer(layer);
+	}
+	// const QList<QgsLayerTreeLayer *> selectedLayers = layerList ? layerList->selectedLayerNodes() : QList<QgsLayerTreeLayer *>();
+
+	// qDebug() << "linyejoe1: " << selectedLayers;
+	// qDebug() << "linyejoe2: " << layer;
+
+	// mapCanvas->setCurrentLayer(layer);
+}
+
+void MainWindow::selectFeatures()
+{
+	mapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::SelectFeatures));
+}
+
+void MainWindow::panMap()
+{
+	mapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::Pan));
+}
+
+void MainWindow::zoomIn()
+{
+	mapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::ZoomIn));
+}
+
+void MainWindow::zoomOut()
+{
+	mapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::ZoomOut));
+}
+
+void MainWindow::zoomToSelected()
+{
+	const QList<QgsMapLayer *> layers = layerList->selectedLayers();
+
+	if (layers.size() > 1)
+		mapCanvas->zoomToSelected(layers);
+	else
+		mapCanvas->zoomToSelected();
+}
+
+void MainWindow::addUserInputWidget(QWidget *widget)
+{
+	mUserInputDockWidget->addUserInputWidget(widget);
+}
+
 void MainWindow::setDemo()
 {
+	addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("法定空地"), BA);
+	addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("法定騎樓"), AL);
+	addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("建築物"), BU);
+
 	// layerOptions.
 	const QgsVectorLayer::LayerOptions layerOptions{QgsProject::instance()->transformContext()};
 
@@ -107,10 +259,6 @@ void MainWindow::setDemo()
 	landLayer->setLabeling(new QgsVectorLayerSimpleLabeling(landLayerLabelSetting));
 	landLayer->setLabelsEnabled(true);
 	// END of set land label
-
-	addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("建築物"), BU);
-	addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("法定騎樓"), AL);
-	addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("法定空地"), BA);
 
 	QgsProject::instance()
 			->addMapLayer(landLayer);
@@ -153,6 +301,8 @@ void MainWindow::addVectorLayers(QString filePath, QString DisplayName, LayerTyp
 		layerLabelSetting.centroidWhole = true;
 		layer->setLabeling(new QgsVectorLayerSimpleLabeling(layerLabelSetting));
 		layer->setLabelsEnabled(true);
+
+		mapCanvas->setCurrentLayer(layer);
 		break;
 	case BA:
 		layer->setSubsetString("\"layer\" = 'BA'");
@@ -286,9 +436,9 @@ void MainWindow::initLayerTreeView()
 	//	addDockWidget(Qt::RightDockWidgetArea, layerListDock);
 
 	//	// 連接畫布和圖層列表
-	//	layerListBridge = new QgsLayerTreeMapCanvasBridge(QgsProject::instance()->layerTreeRoot(), mapCanvas, this);
-	//	connect(QgsProject::instance(), SIGNAL(writeProject(QDomDocument &)), layerListBridge, SLOT(writeProject(QDomDocument &)));
-	//	connect(QgsProject::instance(), SIGNAL(readProject(QDomDocument)), layerListBridge, SLOT(readProject(QDomDocument)));
+	layerListBridge = new QgsLayerTreeMapCanvasBridge(QgsProject::instance()->layerTreeRoot(), mapCanvas, this);
+	connect(QgsProject::instance(), SIGNAL(writeProject(QDomDocument &)), layerListBridge, SLOT(writeProject(QDomDocument &)));
+	connect(QgsProject::instance(), SIGNAL(readProject(QDomDocument)), layerListBridge, SLOT(readProject(QDomDocument)));
 }
 
 void MainWindow::autoSelectAddedLayer(QList<QgsMapLayer *> layers)

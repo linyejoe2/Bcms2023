@@ -13,8 +13,8 @@
                 "D:/OSGeo4W/apps/Qt5/include/QtXml",
                 "D:/OSGeo4W/apps/Qt5/include/QtGui",
                 "D:/OSGeo4W/apps/Qt5/lib",
-                "D:/OSGeo4W/apps/qgis/include",
-                "D:/OSGeo4W/apps/qgis/lib",
+                "D:/OSGeo4W/apps/qgis-ltr/include",
+                "D:/OSGeo4W/apps/qgis-ltr/lib",
                 "D:/Project/Bcms2023/test/build-Bcms2023-2-Desktop_Qt_5_12_12_MSVC2017_64bit-Release"
             ],
             "defines": [
