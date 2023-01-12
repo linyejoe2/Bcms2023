@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BcmsApp</class>
+ <widget class="QMainWindow" name="BcmsApp">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>BcmsApp</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuedit">
+    <property name="title">
+     <string>edit</string>
+    </property>
+    <addaction name="actionToggle_Editing"/>
+   </widget>
+   <addaction name="menuedit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="layersDock">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionToggle_Editing"/>
+   <addaction name="actionAdd_Feature"/>
+   <addaction name="actionSelect_Rectangle"/>
+   <addaction name="actionDelete_Selected"/>
+  </widget>
+  <action name="actionToggle_Editing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/img/mActionToggleEditing.png</normaloff>:/img/mActionToggleEditing.png</iconset>
+   </property>
+   <property name="text">
+    <string>Toggle_Editing</string>
+   </property>
+  </action>
+  <action name="actionAdd_Feature">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/img/symbologyAdd.png</normaloff>:/img/symbologyAdd.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add_Feature</string>
+   </property>
+  </action>
+  <action name="actionSelect_Rectangle">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/img/mActionSelectRectangle.svg</normaloff>:/img/mActionSelectRectangle.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Select Rectangle</string>
+   </property>
+   <property name="toolTip">
+    <string>選擇圖層</string>
+   </property>
+  </action>
+  <action name="actionDelete_Selected">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/img/mActionDeleteSelected.svg</normaloff>:/img/mActionDeleteSelected.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Selected</string>
+   </property>
+   <property name="toolTip">
+    <string>刪除選擇圖層</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -10,24 +10,63 @@ CONFIG += c++17
 DEFINES += _USE_MATH_DEFINES
 
 SOURCES += \
+    core/qgsfeatureaction.cpp \
+    editmapdockwidget.cpp \
     layertreeviewmenuprovider.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_canvas.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_curve.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_fitter.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_grid.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_item.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_itemdict.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_layout.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_magnifier.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_marker.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_panner.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_picker.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_plot.cpp \
+    lib/qwtpolar-1.1.1/qwt_polar_renderer.cpp \
     main.cpp \
     mainwindow.cpp \
     maptools/qgsappmaptools.cpp \
+    maptools/qgsguivectorlayertools.cpp \
+    maptools/qgsguivectorlayertools.cpp \
+    maptools/qgsmaptooladdfeature.cpp \
     maptools/qgsmaptoolselect.cpp \
     maptools/qgsmaptoolselectionhandler.cpp \
     maptools/qgsmaptoolselectutils.cpp
 
 HEADERS += \
+    core/qgsfeatureaction.h \
+    editmapdockwidget.h \
     layertreeviewmenuprovider.h \
     lib/json.hpp \
+    lib/qwtpolar-1.1.1/qwt_polar.h \
+    lib/qwtpolar-1.1.1/qwt_polar_canvas.h \
+    lib/qwtpolar-1.1.1/qwt_polar_curve.h \
+    lib/qwtpolar-1.1.1/qwt_polar_fitter.h \
+    lib/qwtpolar-1.1.1/qwt_polar_global.h \
+    lib/qwtpolar-1.1.1/qwt_polar_grid.h \
+    lib/qwtpolar-1.1.1/qwt_polar_item.h \
+    lib/qwtpolar-1.1.1/qwt_polar_itemdict.h \
+    lib/qwtpolar-1.1.1/qwt_polar_layout.h \
+    lib/qwtpolar-1.1.1/qwt_polar_magnifier.h \
+    lib/qwtpolar-1.1.1/qwt_polar_marker.h \
+    lib/qwtpolar-1.1.1/qwt_polar_panner.h \
+    lib/qwtpolar-1.1.1/qwt_polar_picker.h \
+    lib/qwtpolar-1.1.1/qwt_polar_plot.h \
+    lib/qwtpolar-1.1.1/qwt_polar_renderer.h \
     mainwindow.h \
     maptools/qgsappmaptools.h \
+    maptools/qgsguivectorlayertools.h \
+    maptools/qgsguivectorlayertools.h \
+    maptools/qgsmaptooladdfeature.h \
     maptools/qgsmaptoolselect.h \
     maptools/qgsmaptoolselectionhandler.h \
     maptools/qgsmaptoolselectutils.h
 
 FORMS += \
+    editmapdockwidget.ui \
     mainwindow.ui
 
 ## QGIS 相關

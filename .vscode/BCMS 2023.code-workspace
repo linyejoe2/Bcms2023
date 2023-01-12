@@ -96,12 +96,26 @@
 			"xtr1common": "cpp",
 			"xtree": "cpp",
 			"xutility": "cpp",
-			"qapplication": "cpp"
+			"qapplication": "cpp",
+			"qsettings": "cpp"
+		},
+		"editor.quickSuggestions": {
+			"comments": true,
+			"strings": true
 		},
 		"better-comments.tags": [
 			{
 				"tag": "END",
 				"color": "#ffffff",
+				"strikethrough": false,
+				"underline": false,
+				"backgroundColor": "transparent",
+				"bold": false,
+				"italic": false
+			},
+			{
+				"tag": "START",
+				"color": "#e1f6ff",
 				"strikethrough": false,
 				"underline": false,
 				"backgroundColor": "transparent",
@@ -137,6 +151,15 @@
 			},
 			{
 				"tag": "todo",
+				"color": "#FF8C00",
+				"strikethrough": false,
+				"underline": false,
+				"backgroundColor": "transparent",
+				"bold": false,
+				"italic": false
+			},
+			{
+				"tag": "@todo",
 				"color": "#FF8C00",
 				"strikethrough": false,
 				"underline": false,

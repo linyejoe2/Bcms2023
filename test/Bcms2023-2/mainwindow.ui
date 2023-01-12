@@ -50,7 +50,7 @@
    <addaction name="menu_3"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBarAddLayer">
+  <widget class="QToolBar" name="toolBarFileTool">
    <property name="windowTitle">
     <string>載入圖層工具列</string>
    </property>
@@ -61,6 +61,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionAdd_Vector"/>
+   <addaction name="actionSelect_Edit_Area"/>
   </widget>
   <widget class="QDockWidget" name="LayersList">
    <property name="windowTitle">
@@ -87,6 +88,22 @@
    <addaction name="actionZoom_Full_Map"/>
    <addaction name="actionZoom_To_Selected"/>
    <addaction name="actionSelect_Rectangle"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionToggle_Edit"/>
+   <addaction name="actionSava_Layer_Edit"/>
+   <addaction name="actionAdd_Feature"/>
+   <addaction name="actionModify_Attributes"/>
+   <addaction name="actionDelete_Polygon"/>
   </widget>
   <action name="actionAdd_Vector">
    <property name="icon">
@@ -170,6 +187,72 @@
    </property>
    <property name="toolTip">
     <string>選擇圖層</string>
+   </property>
+  </action>
+  <action name="actionSelect_Edit_Area">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionToggleEditing.svg</normaloff>:/img/mActionToggleEditing.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Select_Edit_Area</string>
+   </property>
+  </action>
+  <action name="actionToggle_Edit">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionToggleEditing.svg</normaloff>:/img/mActionToggleEditing.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Toggle Edit</string>
+   </property>
+   <property name="toolTip">
+    <string>編輯圖層</string>
+   </property>
+  </action>
+  <action name="actionSava_Layer_Edit">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionSaveAllEdits.svg</normaloff>:/img/mActionSaveAllEdits.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Sava Layer Edit</string>
+   </property>
+   <property name="toolTip">
+    <string>存檔</string>
+   </property>
+  </action>
+  <action name="actionAdd_Feature">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionCapturePolygon.png</normaloff>:/img/mActionCapturePolygon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Feature</string>
+   </property>
+   <property name="toolTip">
+    <string>新增圖層</string>
+   </property>
+  </action>
+  <action name="actionModify_Attributes">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionNewTableRow.png</normaloff>:/img/mActionNewTableRow.png</iconset>
+   </property>
+   <property name="text">
+    <string>Modify Attributes</string>
+   </property>
+  </action>
+  <action name="actionDelete_Polygon">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/mActionDeleteAttribute.png</normaloff>:/img/mActionDeleteAttribute.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Polygon</string>
    </property>
   </action>
  </widget>

@@ -6,7 +6,7 @@
 #include <qgsmaptoolzoom.h>
 #include <qgssettingsregistrycore.h>
 
-#include "mainwindow.h"
+#include "qgsmaptooladdfeature.h"
 #include "qgsmaptoolselect.h"
 
 QgsAppMapTools::QgsAppMapTools(QgsMapCanvas *canvas,
@@ -17,10 +17,13 @@ QgsAppMapTools::QgsAppMapTools(QgsMapCanvas *canvas,
     mTools.insert(Tool::Pan, new QgsMapToolPan(canvas));
     mTools.insert(Tool::AnnotationEdit,
                   new QgsMapToolModifyAnnotation(canvas, cadDock));
+    mTools.insert(Tool::AddFeature,
+                  new QgsMapToolAddFeature(canvas, cadDock,
+                                           QgsMapToolCapture::CaptureNone));
     mTools.insert(Tool::SelectFeatures, new QgsMapToolSelect(canvas));
-    mTools.insert(Tool::SelectPolygon, new QgsMapToolSelect(canvas));
-    mTools.insert(Tool::SelectFreehand, new QgsMapToolSelect(canvas));
-    mTools.insert(Tool::SelectRadius, new QgsMapToolSelect(canvas));
+    // mTools.insert(Tool::SelectPolygon, new QgsMapToolSelect(canvas));
+    // mTools.insert(Tool::SelectFreehand, new QgsMapToolSelect(canvas));
+    // mTools.insert(Tool::SelectRadius, new QgsMapToolSelect(canvas));
 }
 
 QgsAppMapTools::~QgsAppMapTools() {
