@@ -454,8 +454,8 @@ void BcmsApp::addVectorLayers(QString filePath, QString DisplayName,
 
             // 設置屬性類型
             for (auto field : layer->fields()) {
-                qDebug() << field.displayName() << ", " << field.displayType()
-                         << ", " << field.type();
+                //@ qDebug() << field.displayName() << ", " << field.displayType()
+                //          << ", " << field.type();
                 if (field.displayName() == tr("layer")) {
                     field.setDefaultValueDefinition(
                         QgsDefaultValue(QStringLiteral("\"BU\"")));

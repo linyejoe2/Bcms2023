@@ -175,6 +175,15 @@
 				"backgroundColor": "transparent",
 				"bold": false,
 				"italic": false
+			},
+			{
+				"tag": "@",
+				"color": "#3ebd53",
+				"strikethrough": false,
+				"underline": false,
+				"backgroundColor": "transparent",
+				"bold": false,
+				"italic": false
 			}
 		]
 	}
