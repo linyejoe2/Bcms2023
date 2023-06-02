@@ -15,6 +15,7 @@
 #include <qgsvectordataprovider.h>
 #include <qgsvectorlayer.h>
 #include <qgsvectorlayerutils.h>
+#include <qinputdialog.h>
 
 #include <QPushButton>
 
@@ -174,6 +175,16 @@ bool QgsFeatureAction::addFeature(const QgsAttributeMap &defaultAttributes,
         mFeature->setAttribute(tr("layer"), tr("BA"));
     } else if (mLayer->name() == QStringLiteral("建築物")) {
         mFeature->setAttribute(tr("layer"), tr("BU"));
+
+        //! 開啟建號輸入畫面
+        bool ok;
+        QString attributeLabel = QInputDialog::getText(
+            nullptr, tr("Enter Attribute Label"), tr("Attribute Label:"),
+            QLineEdit::Normal, QString(), &ok);
+        if (ok && !attributeLabel.isEmpty()) {
+            // Set the attribute label value
+            mFeature->setAttribute(tr("label"), attributeLabel);
+        }
     } else if (mLayer->name() == QStringLiteral("法定騎樓")) {
         mFeature->setAttribute(tr("layer"), tr("AL"));
     }

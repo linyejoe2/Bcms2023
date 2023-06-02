@@ -3,6 +3,7 @@
 
 class QgsAppMapTools;
 class QgsGuiVectorLayerTools;
+class BcmsLoadForm;
 
 #include <QMainWindow>
 
@@ -18,6 +19,7 @@ class QgsGuiVectorLayerTools;
 #include <qgsraster.h>
 #include <qgsscalecombobox.h>
 #include <qgsvectorlayertools.h>
+#include "bcmsloadform.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -68,6 +70,8 @@ class BcmsApp : public QMainWindow {
     //! 刪除選擇元素
     void deleteSelected(QgsMapLayer *layer = nullptr, QWidget *parent = nullptr,
                         bool checkFeaturesVisible = false);
+    //! 開啟地段選擇畫面
+    void openMBcmsLoadForm();
 
    private:
     Ui::BcmsApp *ui;
@@ -88,6 +92,8 @@ class BcmsApp : public QMainWindow {
     QgsAdvancedDigitizingDockWidget *mAdvancedDigitizingDockWidget;
     //! 矢量工具
     QgsVectorLayerTools *mVectorLayerTools;
+    //! 圖層選擇畫面
+    BcmsLoadForm *mBcmsLoadForm;
     //! 單例這個類
     static BcmsApp *sInstance;
 
@@ -96,5 +102,8 @@ class BcmsApp : public QMainWindow {
                          LayerTypes layerTypes);
     //! 初始化圖層管理器
     void initLayerTreeView();
+
+    //! 載入某段
+    void loadLand(const ILandCode &landCode);
 };
 #endif  // BCMSAPP_H

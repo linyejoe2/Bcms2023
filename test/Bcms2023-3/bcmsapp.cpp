@@ -1,5 +1,6 @@
 ﻿#include "bcmsapp.h"
 
+// #include "bcmsloadform.h"
 #include "core/qgsguivectorlayertools.h"
 #include "maptools/qgsappmaptools.h"
 #include "ui_bcmsapp.h"
@@ -93,10 +94,16 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
 
     //! 初始化圖層管理器
     mLayerTreeView = new QgsLayerTreeView(this);
+    ui->layersDock->setWindowTitle(QStringLiteral("圖層管理器"));
     mLayerTreeView->setObjectName(QStringLiteral("m_layerTreeView"));
     initLayerTreeView();
     mLayerTreeView->setMessageBar(mMessageBar);
     ui->layersDock->setWidget(mLayerTreeView);
+
+    //! 初始化地段載入選單
+    mBcmsLoadForm = new BcmsLoadForm(this);
+    mBcmsLoadForm->setFloating(true);
+    mBcmsLoadForm->hide();
 
     //! 初始化 CAD 工具
     mAdvancedDigitizingDockWidget =
@@ -139,12 +146,11 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
             SLOT(changeSelectLayer(QgsMapLayer *)));
     connect(ui->actionSelect_Rectangle, SIGNAL(triggered()), this,
             SLOT(selectFeatures()));
+    connect(ui->actionOpen_SectionForm, SIGNAL(triggered()), this,
+            SLOT(openMBcmsLoadForm()));
     connect(ui->actionDelete_Selected, &QAction::triggered, this,
             [=] { deleteSelected(nullptr, nullptr, true); });
-
-    // 測試用
-    // connect(ui->actionDelete_Selected, SIGNAL(triggered()), this,
-    // SLOT(log()));
+    connect(mBcmsLoadForm, &BcmsLoadForm::loadSignal, this, &BcmsApp::loadLand);
 
     mMessageBar->pushMessage(QStringLiteral("成功載入地圖！"), tr(""),
                              Qgis::MessageLevel::Info);
@@ -152,7 +158,14 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
 
 BcmsApp::~BcmsApp() { delete ui; }
 
+void BcmsApp::loadLand(const ILandCode &landCode) {
+    qDebug() << "landmon: " << landCode.landmon;
+    qDebug() << "landchild: " << landCode.landchild;
+}
+
 void BcmsApp::log() { qDebug() << tr("in"); }
+
+void BcmsApp::openMBcmsLoadForm() { mBcmsLoadForm->show(); }
 
 void BcmsApp::deleteSelected(QgsMapLayer *layer, QWidget *,
                              bool checkFeaturesVisible) {

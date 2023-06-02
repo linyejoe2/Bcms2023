@@ -51,6 +51,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionOpen_SectionForm"/>
    <addaction name="actionToggle_Editing"/>
    <addaction name="actionAdd_Feature"/>
    <addaction name="actionSelect_Rectangle"/>
@@ -99,6 +100,18 @@
    </property>
    <property name="toolTip">
     <string>刪除選擇圖層</string>
+   </property>
+  </action>
+  <action name="actionOpen_SectionForm">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/img/mActionAddNonDbLayer.png</normaloff>:/img/mActionAddNonDbLayer.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open_SectionForm</string>
+   </property>
+   <property name="toolTip">
+    <string>開啟地段</string>
    </property>
   </action>
  </widget>

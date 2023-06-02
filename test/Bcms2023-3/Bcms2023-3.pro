@@ -1,4 +1,4 @@
-QT       += core gui xml svg concurrent
+QT       += core gui xml svg concurrent network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,6 +10,7 @@ CONFIG += c++17
 
 DEFINES += _USE_MATH_DEFINES
 
+
 SOURCES += \
     MapTools/qgsappmaptools.cpp \
     MapTools/qgsfeatureaction.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
     MapTools/qgsmaptoolselect.cpp \
     MapTools/qgsmaptoolselectionhandler.cpp \
     MapTools/qgsmaptoolselectutils.cpp \
+    bcmsloadform.cpp \
     core/qgsguivectorlayertools.cpp \
     main.cpp \
     bcmsapp.cpp
@@ -29,10 +31,13 @@ HEADERS += \
     MapTools/qgsmaptoolselectionhandler.h \
     MapTools/qgsmaptoolselectutils.h \
     bcmsapp.h \
+    bcmsloadform.h \
+    core/const.hpp \
     core/qgsguivectorlayertools.h
 
 FORMS += \
-    bcmsapp.ui
+    bcmsapp.ui \
+    bcmsloadform.ui
 
 ## QGIS 相關
 #
