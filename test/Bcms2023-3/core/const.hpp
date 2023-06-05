@@ -12,7 +12,9 @@ class CONST {
         return &inst;
     }
 
-    QString getGeoViewerJSServiceUrl() { return setting->value("geoViewerJSServiceUrl").toString(); }
+    QString getGeoViewerJSServiceUrl() {
+        return setting->value("geoViewerJSServiceUrl").toString();
+    }
 
    private:
     CONST() {

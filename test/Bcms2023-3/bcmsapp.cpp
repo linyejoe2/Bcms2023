@@ -1,6 +1,7 @@
 ﻿#include "bcmsapp.h"
 
 // #include "bcmsloadform.h"
+// #include "core/const.hpp"
 #include "core/qgsguivectorlayertools.h"
 #include "maptools/qgsappmaptools.h"
 #include "ui_bcmsapp.h"
@@ -10,6 +11,10 @@
 #include <qgridlayout.h>
 #include <qmessagebox.h>
 #include <qshortcut.h>
+
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 
 // START QGis include
 //  #include <qgsmessagebar.h>
@@ -45,6 +50,7 @@
 // START for layer symbol
 #include <qgsfillsymbol.h>
 #include <qgsfillsymbollayer.h>
+#include <qgslinesymbollayer.h>
 #include <qgssinglesymbolrenderer.h>
 // #include <qgscategorizedsymbolrenderer.h>
 // #include <qgsmapcanvas.h>
@@ -129,7 +135,9 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     //! 初始化工具列工具
     mMapTools = std::make_unique<QgsAppMapTools>(mMapCanvas,
                                                  mAdvancedDigitizingDockWidget);
+
     //! 載入圖層
+    addVectorLayers("./temp/400_0044_land.json", QStringLiteral("地籍"), LAND);
     addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("法定空地"),
                     BA);
     addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("法定騎樓"),
@@ -159,8 +167,53 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
 BcmsApp::~BcmsApp() { delete ui; }
 
 void BcmsApp::loadLand(const ILandCode &landCode) {
-    qDebug() << "landmon: " << landCode.landmon;
-    qDebug() << "landchild: " << landCode.landchild;
+    // qDebug() << "landmon: " << landCode.landmon;
+    // qDebug() << "landchild: " << landCode.landchild;
+    // qDebug() << "zon: " << landCode.zon;
+    // qDebug() << "section: " << landCode.section;
+
+    // 建立 QNetworkAccessManager 對象
+    QNetworkAccessManager manager;
+
+    // 要發送的 API URL
+    QString apiUrl = CONST::instance()->getGeoViewerJSServiceUrl() +
+                     "/api/v3/land-data/get/geojson/" + landCode.zon + "/" +
+                     landCode.section;
+
+    // 發送 API 請求，取回 data 放到 resData
+    QNetworkReply *res = manager.get(QNetworkRequest(apiUrl));
+    QEventLoop event;
+    connect(res, &QNetworkReply::finished, &event, &QEventLoop::quit);
+    event.exec();
+    QByteArray resData = res->readAll();
+
+    // 做檔案
+    QString filename =
+        "./temp/" + landCode.zon + "_" + landCode.section + "_" + "land.json";
+    QFile file(filename);
+
+    // 寫入檔案
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(resData);
+        file.close();
+        qDebug() << "Response data written to file: " << filename;
+    } else {
+        qDebug() << "Failed to write response data to file: " << filename;
+    }
+
+    // 清理後載入地圖
+    resetMap();
+    addVectorLayers(filename, QStringLiteral("地籍"), LAND);
+
+    // 最後修改程式名稱為加上地區地段
+    this->setWindowTitle("BcmsApp " + landCode.zonDesc + "-" +
+                         landCode.sectionDesc);
+}
+
+void BcmsApp::resetMap() {
+    QgsProject::instance()->clear();
+    mMapCanvasLayers.clear();
+    mMapCanvas->setTheme("");
 }
 
 void BcmsApp::log() { qDebug() << tr("in"); }
@@ -432,12 +485,30 @@ void BcmsApp::addVectorLayers(QString filePath, QString DisplayName,
         new QgsVectorLayer(filePath, DisplayName, "ogr", layerOptions);
 
     QgsSimpleFillSymbolLayer *landSymbolLayer = new QgsSimpleFillSymbolLayer();
+    QgsSimpleLineSymbolLayer *lineSymbolLayer = new QgsSimpleLineSymbolLayer();
     QgsFillSymbol *fillSymbol = new QgsFillSymbol();
     QgsPalLayerSettings layerLabelSetting;
     QgsEditFormConfig formConfig = layer->editFormConfig();
 
     // 2. layer setting.
     switch (layerTypes) {
+        case LAND:
+            layer->setSubsetString("\"layer\" = 'LAND'");
+            lineSymbolLayer->setColor(Qt::darkBlue);
+            lineSymbolLayer->setWidth(0.3);
+            fillSymbol->changeSymbolLayer(0, lineSymbolLayer);
+            layer->setRenderer(new QgsSingleSymbolRenderer(fillSymbol));
+
+            layerLabelSetting.fieldName = layer->fields()[0].name();
+            layerLabelSetting.drawLabels = true;
+            layerLabelSetting.centroidWhole = true;
+            layer->setLabeling(
+                new QgsVectorLayerSimpleLabeling(layerLabelSetting));
+            layer->setLabelsEnabled(true);
+            layer->updateFields();
+
+            layer->setReadOnly(true);
+            break;
         case BU:
             layer->setSubsetString("\"layer\" = 'BU'");
 
@@ -454,7 +525,8 @@ void BcmsApp::addVectorLayers(QString filePath, QString DisplayName,
 
             // 設置屬性類型
             for (auto field : layer->fields()) {
-                //@ qDebug() << field.displayName() << ", " << field.displayType()
+                //@ qDebug() << field.displayName() << ", " <<
+                // field.displayType()
                 //          << ", " << field.type();
                 if (field.displayName() == tr("layer")) {
                     field.setDefaultValueDefinition(

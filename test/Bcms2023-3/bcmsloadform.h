@@ -12,6 +12,8 @@ struct ILandCode {
     QString zon;
     QString section;
     QString desc;
+    QString zonDesc;
+    QString sectionDesc;
     QString landmon;
     QString landchild;
 };
@@ -43,7 +45,7 @@ class BcmsLoadForm : public QDockWidget {
 
     //! 關閉視窗
     void closeWidget() {
-        cleanWidget();
+        // cleanWidget();
         this->close();
     };
 

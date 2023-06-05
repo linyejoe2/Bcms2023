@@ -97,7 +97,10 @@
 			"xtree": "cpp",
 			"xutility": "cpp",
 			"qapplication": "cpp",
-			"qsettings": "cpp"
+			"qsettings": "cpp",
+			"qjsonobject": "cpp",
+			"qmainwindow": "cpp",
+			"qmenu": "cpp"
 		},
 		"editor.quickSuggestions": {
 			"comments": true,

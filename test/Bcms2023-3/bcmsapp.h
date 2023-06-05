@@ -19,7 +19,9 @@ class BcmsLoadForm;
 #include <qgsraster.h>
 #include <qgsscalecombobox.h>
 #include <qgsvectorlayertools.h>
+
 #include "bcmsloadform.h"
+#include "core/const.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -35,7 +37,19 @@ class BcmsApp : public QMainWindow {
     ~BcmsApp();
 
     //! 套繪系統的圖層
-    enum LayerTypes { SRL, RE, AL, IC, BU, FA, NR, BA, RA };
+    enum LayerTypes {
+        LAND,  // 地籍
+        SRL,
+        RE,
+        AL,  // 法定騎樓
+        IC,
+        BU,  // 建築物
+        FA,
+        NR,
+        BA,  // 法定空地
+        RA
+    };
+
     //! 傳出畫布
     QgsMapCanvas *mapCanvas() { return mMapCanvas; }
     //! 傳出訊息列
@@ -105,5 +119,8 @@ class BcmsApp : public QMainWindow {
 
     //! 載入某段
     void loadLand(const ILandCode &landCode);
+
+    //! 清理地圖
+    void resetMap();
 };
 #endif  // BCMSAPP_H

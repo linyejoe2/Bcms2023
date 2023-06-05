@@ -46,6 +46,12 @@ void BcmsLoadForm::load() {
         ui->tableView->model()->index(qIndex.row(), 2).data().toString();
     selectedLand.landchild =
         ui->tableView->model()->index(qIndex.row(), 3).data().toString();
+    selectedLand.zon = ui->zonComboBox->currentData().toString();
+    selectedLand.section = ui->sectionComboBox->currentData().toString();
+    selectedLand.zonDesc =
+        findZonDesc(ui->zonComboBox->currentData().toString());
+    selectedLand.sectionDesc =
+        findSectionDesc(ui->sectionComboBox->currentData().toString());
 
     emit loadSignal(selectedLand);
 
