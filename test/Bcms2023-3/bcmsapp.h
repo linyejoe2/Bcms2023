@@ -130,5 +130,8 @@ class BcmsApp : public QMainWindow {
 
     //! 檢查 GeoJSON 文件
     bool checkGeoJSON(const QString &filePath);
+
+    //! 尋找圖層
+    QgsVectorLayer *findLayerByName(const QString &name);
 };
 #endif  // BCMSAPP_H

@@ -81,6 +81,9 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     sInstance = this;
     ui->setupUi(this);
 
+    this->showMaximized();
+    // showFullScreen();
+
     //! 布局
     QWidget *centralWidget = this->centralWidget();
     QGridLayout *centralLayout = new QGridLayout(centralWidget);
@@ -250,9 +253,55 @@ void BcmsApp::loadBuilding(const ILandCode &landCode) {
     // addVectorLayers(filename, QStringLiteral("其他"), OTHER);
 
     // 定位到該去的地號
-    // setLocate(landCode);
+    setLocate(landCode);
 }
-void BcmsApp::setLocate(const ILandCode &landCode) {}
+void BcmsApp::setLocate(const ILandCode &landCode) {
+    auto landLayer = findLayerByName(QStringLiteral("地籍"));
+
+    // 构建查询表达式
+    QString expression = QString("\"landmon\" = '%1' AND \"landchild\" = '%2'")
+                             .arg(landCode.landmon)
+                             .arg(landCode.landchild);
+    qDebug() << "expression: " << expression;
+
+    // 创建查询请求
+    QgsFeatureRequest request;
+    request.setFilterExpression(expression);
+
+    // 要素集合
+    QgsFeatureIterator it = landLayer->getFeatures(request);
+    if (it.isValid()) {
+        // 抓出第一個符合的要素
+        QgsFeature feat;
+        it.nextFeature(feat);
+
+        // 获取要素的几何信息
+        QgsGeometry geometry = feat.geometry();
+        QgsRectangle boundingBox = geometry.boundingBox();
+        boundingBox.scale(8);
+
+        // 定位到要素的几何范围
+        mMapCanvas->setExtent(boundingBox);
+        mMapCanvas->refresh();
+    }
+
+    mMessageBar->pushMessage(QStringLiteral("成功載入地圖！"), tr(""),
+                             Qgis::MessageLevel::Info);
+}
+
+QgsVectorLayer *BcmsApp::findLayerByName(const QString &name) {
+    for (QgsMapLayer *layer : mMapCanvasLayers) {
+        QgsVectorLayer *vectorLayer = dynamic_cast<QgsVectorLayer *>(layer);
+        if (vectorLayer) {
+            // 检查图层的 name 属性是否匹配
+            if (vectorLayer->name() == name) {
+                return vectorLayer;
+            }
+        }
+    }
+
+    return nullptr;
+}
 
 void BcmsApp::resetMap() {
     QgsProject::instance()->clear();
