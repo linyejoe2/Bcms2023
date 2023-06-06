@@ -167,7 +167,7 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
 BcmsApp::~BcmsApp() { delete ui; }
 
 void BcmsApp::loadLand(const ILandCode &landCode) {
-    // qDebug() << "landmon: " << landCode.landmon;
+    //@ qDebug() << "landmon: " << landCode.landmon;
     // qDebug() << "landchild: " << landCode.landchild;
     // qDebug() << "zon: " << landCode.zon;
     // qDebug() << "section: " << landCode.section;
@@ -208,7 +208,51 @@ void BcmsApp::loadLand(const ILandCode &landCode) {
     // 最後修改程式名稱為加上地區地段
     this->setWindowTitle("BcmsApp " + landCode.zonDesc + "-" +
                          landCode.sectionDesc);
+
+    // 載入建築物套繪資料
+    loadBuilding(landCode);
 }
+
+void BcmsApp::loadBuilding(const ILandCode &landCode) {
+    // 建立 QNetworkAccessManager 對象
+    QNetworkAccessManager manager;
+
+    // 要發送的 API URL
+    QString apiUrl = CONST::instance()->getGeoViewerJSServiceUrl() +
+                     "/api/v3/building-data/get/geojson/" + landCode.zon + "/" +
+                     landCode.section;
+
+    // 發送 API 請求，取回 data 放到 resData
+    QNetworkReply *res = manager.get(QNetworkRequest(apiUrl));
+    QEventLoop event;
+    connect(res, &QNetworkReply::finished, &event, &QEventLoop::quit);
+    event.exec();
+    QByteArray resData = res->readAll();
+
+    // 做檔案
+    QString filename = "./temp/" + landCode.zon + "_" + landCode.section + "_" +
+                       "building.json";
+    QFile file(filename);
+
+    // 寫入檔案
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(resData);
+        file.close();
+        qDebug() << "Response data written to file: " << filename;
+    } else {
+        qDebug() << "Failed to write response data to file: " << filename;
+    }
+
+    // 載入檔案
+    addVectorLayers(filename, QStringLiteral("法定空地"), BA);
+    addVectorLayers(filename, QStringLiteral("法定騎樓"), AL);
+    addVectorLayers(filename, QStringLiteral("建築物"), BU);
+    // addVectorLayers(filename, QStringLiteral("其他"), OTHER);
+
+    // 定位到該去的地號
+    // setLocate(landCode);
+}
+void BcmsApp::setLocate(const ILandCode &landCode) {}
 
 void BcmsApp::resetMap() {
     QgsProject::instance()->clear();
@@ -474,8 +518,53 @@ void BcmsApp::autoSelectAddedLayer(QList<QgsMapLayer *> layers) {
     }
 }
 
+bool BcmsApp::checkGeoJSON(const QString &filePath) {
+    // 检查文件是否存在
+    QFile file(filePath);
+    if (!file.exists()) {
+        mMessageBar->pushMessage(QStringLiteral("套繪檔案不存在"),
+                                 Qgis::MessageLevel::Warning, 5);
+        return false;
+    }
+
+    // 读取文件内容
+    if (!file.open(QIODevice::ReadOnly)) {
+        mMessageBar->pushMessage(QStringLiteral("套繪檔案唯獨"),
+                                 Qgis::MessageLevel::Warning, 5);
+        return false;
+    }
+
+    // 读取文件内容为 JSON
+    QByteArray fileData = file.readAll();
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    if (jsonDoc.isNull()) {
+        mMessageBar->pushMessage(QStringLiteral("套繪檔案格式錯誤"),
+                                 Qgis::MessageLevel::Warning, 5);
+        return false;
+    }
+
+    // 检查文件是否包含 features
+    QJsonObject jsonObject = jsonDoc.object();
+    if (!jsonObject.contains("features")) {
+        mMessageBar->pushMessage(QStringLiteral("圖層沒有要素"),
+                                 Qgis::MessageLevel::Warning, 5);
+        return false;
+    }
+
+    QJsonArray featuresArray = jsonObject.value("features").toArray();
+    if (featuresArray.isEmpty()) {
+        mMessageBar->pushMessage(QStringLiteral("圖層沒有要素"),
+                                 Qgis::MessageLevel::Warning, 5);
+        return false;
+    }
+    return true;
+}
+
 void BcmsApp::addVectorLayers(QString filePath, QString DisplayName,
                               LayerTypes layerTypes) {
+    // 例外退出
+    if (!checkGeoJSON(filePath)) return;
+
     // layerOptions.
     const QgsVectorLayer::LayerOptions layerOptions{
         QgsProject::instance()->transformContext()};
@@ -555,6 +644,9 @@ void BcmsApp::addVectorLayers(QString filePath, QString DisplayName,
             fillSymbol->changeSymbolLayer(0, landSymbolLayer);
             layer->setRenderer(new QgsSingleSymbolRenderer(fillSymbol));
             break;
+        case OTHER:
+        // TODO
+        // layer->setSubsetString("\"layer\" = 'OTHER'");
         default:
             break;
     }

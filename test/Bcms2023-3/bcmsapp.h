@@ -47,7 +47,8 @@ class BcmsApp : public QMainWindow {
         FA,
         NR,
         BA,  // 法定空地
-        RA
+        RA,
+        OTHER  // 無法辨識或是未定義的，都會被放到此類
     };
 
     //! 傳出畫布
@@ -119,8 +120,15 @@ class BcmsApp : public QMainWindow {
 
     //! 載入某段
     void loadLand(const ILandCode &landCode);
+    //! 載入某段的套繪資料
+    void loadBuilding(const ILandCode &landCode);
+    //! 定位到某個地號
+    void setLocate(const ILandCode &landCode);
 
     //! 清理地圖
     void resetMap();
+
+    //! 檢查 GeoJSON 文件
+    bool checkGeoJSON(const QString &filePath);
 };
 #endif  // BCMSAPP_H
