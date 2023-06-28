@@ -22,6 +22,7 @@ class BcmsLoadForm;
 
 #include "bcmsloadform.h"
 #include "core/const.hpp"
+#include "services/geoviewer.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
