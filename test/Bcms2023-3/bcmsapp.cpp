@@ -628,6 +628,55 @@ void BcmsApp::addVectorLayers(QString filePath, QString DisplayName,
     QgsPalLayerSettings layerLabelSetting;
     QgsEditFormConfig formConfig = layer->editFormConfig();
 
+    QJsonArray tempArr = GeoViewer::instance()->getFeaturedef();
+
+    qDebug() << tempArr[0];
+
+    // 将 jsonArray 转换为 QJsonDocument
+    QJsonDocument jsonDoc(tempArr);
+
+    // 解析 QJsonDocument
+    // if (jsonDoc.isArray()) {
+    //     qDebug() << "is array";
+    //     QJsonArray parsedArray = jsonDoc.array();
+    //     if (!parsedArray.isEmpty()) {
+    //         qDebug() << "is not empty";
+    //         // 获取第一个元素的 QJsonObject
+    //         QJsonObject firstObject = parsedArray.at(0).toObject();
+
+    //         // 检查 symbol_type 字段是否存在
+    //         if (firstObject.contains("symbol_type")) {
+    //             qDebug() << "has symbol_type";
+    //             // 获取 symbol_type 字段的值
+    //             QJsonValue symbolTypeValue = firstObject.value("symbol_type");
+
+    //             // 检查 symbol_type 的值是否为数组
+    //             if (symbolTypeValue.isArray()) {
+    //                 qDebug() << "symbol_type is array";
+    //                 QJsonArray symbolTypeArray = symbolTypeValue.toArray();
+
+    //                 // 检查数组中是否有至少一个元素
+    //                 if (!symbolTypeArray.isEmpty()) {
+    //                     qDebug() << "symbol_type is not empty";
+    //                     // 获取第一个元素的 QJsonObject
+    //                     QJsonObject symbolTypeObject =
+    //                         symbolTypeArray.at(0).toObject();
+
+    //                     // 检查 Type 字段是否存在
+    //                     if (symbolTypeObject.contains("Type")) {
+    //                         // 获取 Type 字段的值
+    //                         QString typeValue =
+    //                             symbolTypeObject.value("Type").toString();
+    //                         qDebug() << "Type:" << typeValue;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+
+
     // 2. layer setting.
     switch (layerTypes) {
         case LAND:
