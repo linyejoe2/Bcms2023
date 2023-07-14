@@ -1,5 +1,4 @@
 {
-                "${workspaceFolder}/test/**",
   "configurations": [
     {
       "name": "Bcms 2023",

@@ -47,7 +47,7 @@ FORMS += \
 INCLUDEPATH += "$(OSGEO_HOME)\include"
 # INCLUDEPATH += "$(OSGEO_HOME)\apps\qgis-rel-dev\include"
 #INCLUDEPATH += "$(OSGEO_HOME)\apps\qgis-ltr\include"
-INCLUDEPATH += "$(OSGEO_HOME)\apps\qgis-ltr\include"
+INCLUDEPATH += "$(OSGEO_HOME)\apps\qgis\include"
 INCLUDEPATH += "$(OSGEO_HOME)\apps\Qt5\include"
 INCLUDEPATH += "$(OSGEO_HOME)\apps\Qt5\include\QtCore"
 INCLUDEPATH += "$(OSGEO_HOME)\apps\Qt5\include\QtWidgets"
@@ -55,7 +55,7 @@ INCLUDEPATH += "$(OSGEO_HOME)\apps\Qt5\include\QtXml"
 INCLUDEPATH += "$(OSGEO_HOME)\apps\Qt5\include\QtGui"
 
 #LIBS += -L"$(OSGEO_HOME)\apps\qgis-ltr\lib" -lqgis_core -lqgis_gui -lqgis_app
-LIBS += -L"$(OSGEO_HOME)\apps\qgis-ltr\lib" -lqgis_core -lqgis_gui -lqgis_app
+LIBS += -L"$(OSGEO_HOME)\apps\qgis\lib" -lqgis_core -lqgis_gui -lqgis_app
 LIBS += -L"$(OSGEO_HOME)\apps\Qt5\lib" -lQt5Core -lQt5Gui -lQt5Widgets
 # LIBS += -L"$(OSGEO_HOME)\apps\qgis-rel-dev\lib" -lqgis_core -lqgis_gui
 #
