@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "console": "externalTerminal",
+      "cwd": "d:/Project/Bcms2023/test/Bcms2023-3-Release",
+      "program": "d:/Project/Bcms2023/test/Bcms2023-3-Release/build/Release/outRelease"
+    }
+  ]
+}

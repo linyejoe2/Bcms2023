@@ -1,0 +1,34 @@
+{
+    "configurations": [
+        {
+            "name": "Qt",
+            "includePath": [
+                "${workspaceFolder}/test/**",
+                "C:/Qt/5.12.12/msvc2017_64/bin",
+                "C:/Qt/5.12.12/msvc2017_64/include/**",
+                "C:/OSGeo4W/include",
+                "C:/OSGeo4W/apps/Qt5/include",
+                "C:/OSGeo4W/apps/Qt5/include/QtCore",
+                "C:/OSGeo4W/apps/Qt5/include/QtWidgets",
+                "C:/OSGeo4W/apps/Qt5/include/QtXml",
+                "C:/OSGeo4W/apps/Qt5/include/QtGui",
+                "C:/OSGeo4W/apps/Qt5/lib",
+                "C:/OSGeo4W/apps/qgis/include",
+                "C:/OSGeo4W/apps/qgis/lib",
+                "${workspaceFolder}/test/build-Bcms2023-3-MSVC2017-Release/"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.17763.0",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "${default}"
+            // "compileCommands": "${workspaceFolder}/test/build-Bcms2023-3-MSVC2017-Release/.qtc_clangd/compile_commands.json"
+        }
+    ],
+    "version": 4
+}

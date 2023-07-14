@@ -1,33 +1,33 @@
 {
-    "configurations": [
-        {
-            "name": "Qt",
-            "includePath": [
-                "${workspaceFolder}/test/**",
-                "C:/Qt/5.12.12/msvc2017_64/bin",
-                "C:/Qt/5.12.12/msvc2017_64/include/**",
-                "D:/OSGeo4W/include",
-                "D:/OSGeo4W/apps/Qt5/include",
-                "D:/OSGeo4W/apps/Qt5/include/QtCore",
-                "D:/OSGeo4W/apps/Qt5/include/QtWidgets",
-                "D:/OSGeo4W/apps/Qt5/include/QtXml",
-                "D:/OSGeo4W/apps/Qt5/include/QtGui",
-                "D:/OSGeo4W/apps/Qt5/lib",
-                "D:/OSGeo4W/apps/qgis/include",
-                "D:/OSGeo4W/apps/qgis/lib",
-                "D:/Project/Bcms2023/test/build-Bcms2023-2-Desktop_Qt_5_12_12_MSVC2017_64bit-Release"
-            ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "windowsSdkVersion": "10.0.17763.0",
-            "compilerPath": "D:/Program Files (x86)/Microsoft Visual Studio/2017/Enterprise/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "${default}"
-        }
-    ],
-    "version": 4
+  "configurations": [
+    {
+      "name": "Bcms 2023",
+      "includePath": [
+        "${workspaceFolder}/test/**",
+        "C:/Qt/5.12.12/msvc2017_64/bin",
+        "C:/Qt/5.12.12/msvc2017_64/include/**",
+        "C:/OSGeo4W/include",
+        "C:/OSGeo4W/apps/Qt5/include",
+        "C:/OSGeo4W/apps/Qt5/include/QtCore",
+        "C:/OSGeo4W/apps/Qt5/include/QtWidgets",
+        "C:/OSGeo4W/apps/Qt5/include/QtXml",
+        "C:/OSGeo4W/apps/Qt5/include/QtGui",
+        "C:/OSGeo4W/apps/Qt5/lib",
+        "C:/OSGeo4W/apps/qgis/include",
+        "C:/OSGeo4W/apps/qgis/lib",
+        "${workspaceFolder}/test/build-Bcms2023-3-MSVC2017-Release/"
+      ],
+      "defines": [
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "windowsSdkVersion": "10.0.17763.0",
+      "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-msvc-x64"
+    }
+  ],
+  "version": 4
 }

@@ -1,0 +1,22 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+     
+    {
+      "name": "(Windows) Launch",
+      "type": "cppvsdbg",
+       "request": "launch",
+      "program": "${workspaceRoot}/Bcms2023/test/build-Bcms2023-3-MSVC2017-Release/release/Bcms2023-3.exe",
+      "preLaunchTask": "release",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "console": "externalTerminal"
+    }
+
+  ]
+}
