@@ -100,7 +100,9 @@
 			"qsettings": "cpp",
 			"qjsonobject": "cpp",
 			"qmainwindow": "cpp",
-			"qmenu": "cpp"
+			"qmenu": "cpp",
+			"qnetworkaccessmanager": "cpp",
+			"qjsondocument": "cpp"
 		},
 		"editor.quickSuggestions": {
 			"comments": true,

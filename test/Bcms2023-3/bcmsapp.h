@@ -37,20 +37,20 @@ class BcmsApp : public QMainWindow {
     BcmsApp(QWidget *parent = nullptr);
     ~BcmsApp();
 
-    //! 套繪系統的圖層
-    enum LayerTypes {
-        LAND,  // 地籍
-        SRL,
-        RE,
-        AL,  // 法定騎樓
-        IC,
-        BU,  // 建築物
-        FA,
-        NR,
-        BA,  // 法定空地
-        RA,
-        OTHER  // 無法辨識或是未定義的，都會被放到此類
-    };
+    // //! 套繪系統的圖層
+    // enum LayerTypes {
+    //     LD,  // 地籍
+    //     SRL,
+    //     RE,
+    //     AL,  // 法定騎樓
+    //     IC,
+    //     BU,  // 建築物
+    //     FA,
+    //     NR,
+    //     BA,  // 法定空地
+    //     RA,
+    //     OTHER  // 無法辨識或是未定義的，都會被放到此類
+    // };
 
     //! 傳出畫布
     QgsMapCanvas *mapCanvas() { return mMapCanvas; }
@@ -115,7 +115,11 @@ class BcmsApp : public QMainWindow {
 
     //! 添加圖層
     void addVectorLayers(QString filePath, QString DisplayName,
-                         LayerTypes layerTypes);
+                         QString layerTypes);
+    //! 初始化圖層定義
+    void initLayerDefine(QString filePath);
+    //! 初始化地籍圖層定義
+    void initLandDefine(QString filePath);
     //! 初始化圖層管理器
     void initLayerTreeView();
 
@@ -131,6 +135,10 @@ class BcmsApp : public QMainWindow {
 
     //! 檢查 GeoJSON 文件
     bool checkGeoJSON(const QString &filePath);
+
+    // TODO
+    // //! 設定圖層表現方式
+    // void setLayerSymbol(QgsVectorLayer layer, )
 
     //! 尋找圖層
     QgsVectorLayer *findLayerByName(const QString &name);

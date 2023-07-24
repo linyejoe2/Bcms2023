@@ -11,13 +11,33 @@
 #include "../core/const.hpp"
 
 GeoViewer* GeoViewer::ins = nullptr;
-QJsonArray* GeoViewer::featuredef = nullptr;
+std::unique_ptr<QJsonArray> GeoViewer::featuredef = nullptr;
 
 GeoViewer::GeoViewer() {
-    //! init featuredef
-    *featuredef =
-        QJsonDocument::fromJson(connectApi("/api/v3/featuredef/get").toUtf8())
-            .array();
+    try {
+        //! init featuredef
+        auto temp = connectApi("/api/v3/featuredef/get").toUtf8();
+        // qDebug() << "featuredef raw data: " << temp;
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(temp);
+
+        if (jsonResponse.isArray()) {
+            // QJsonArray array = jsonResponse.array();
+            GeoViewer::featuredef =
+                std::make_unique<QJsonArray>(jsonResponse.array());
+            // QString fdesc = GeoViewer::featuredef->at(0)
+            //                     .toObject()
+            //                     .value("fdesc")
+            //                     .toString();
+            // qDebug() << "fdesc: " << fdesc;
+
+            qDebug() << "Featuredef initialized successfully.";
+        } else {
+            qDebug() << "Error: Invalid JSON response for featuredef.";
+        }
+    } catch (const std::exception& e) {
+        qDebug() << "Exception occurred while initializing featuredef:"
+                 << e.what();
+    }
 }
 
 QString GeoViewer::connectApi(QString path) {

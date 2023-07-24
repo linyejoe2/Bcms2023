@@ -16,7 +16,7 @@ class GeoViewer : public QObject {
         return ins;
     }
 
-    QJsonArray getFeaturedef() { return *featuredef; }
+    static QJsonArray* getFeaturedef() { return featuredef.get(); }
 
     /**
      * @brief 連接 api
@@ -32,7 +32,7 @@ class GeoViewer : public QObject {
     static GeoViewer* ins;
 
     //! 圖層設定
-    static QJsonArray* featuredef;
+    static std::unique_ptr<QJsonArray> featuredef;
 };
 
 // GeoViewer* GeoViewer::instance = nullptr;
