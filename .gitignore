@@ -129,3 +129,4 @@ CMakeLists.txt.user*
 example/qgis_dev
 
 *img
+example/qgis_res
