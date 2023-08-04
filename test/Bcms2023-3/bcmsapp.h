@@ -133,6 +133,9 @@ class BcmsApp : public QMainWindow {
     //! 清理地圖
     void resetMap();
 
+    // //! 從圖層管理器內載入所有圖層
+    // void loadLayerIntoMap();
+
     //! 檢查 GeoJSON 文件
     bool checkGeoJSON(const QString &filePath);
 

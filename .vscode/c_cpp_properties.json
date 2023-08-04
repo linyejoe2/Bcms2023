@@ -15,7 +15,7 @@
         "C:/OSGeo4W/apps/Qt5/lib",
         "C:/OSGeo4W/apps/qgis/include",
         "C:/OSGeo4W/apps/qgis/lib",
-        "${workspaceFolder}/test/build-Bcms2023-3-MSVC2017-Release/"
+        "${workspaceFolder}/test/build-Bcms2023-3-Desktop_Qt_5_12_12_MSVC2017_64bit-Release/"
       ],
       "defines": [
         "_DEBUG",

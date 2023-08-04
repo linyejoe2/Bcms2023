@@ -86,8 +86,6 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     this->showMaximized();
     // showFullScreen();
 
-    auto& asd = BcmsFeaturedef::instance();
-    qDebug() << "asd: " << asd.rowData();
     //! 布局
     QWidget *centralWidget = this->centralWidget();
     QGridLayout *centralLayout = new QGridLayout(centralWidget);
@@ -144,13 +142,15 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
                                                  mAdvancedDigitizingDockWidget);
 
     //! 載入圖層
-    // initLandDefine("./temp/400_0044_land.json");
-    // initLayerDefine("./temp/400_0044_polygon.json");
-    addVectorLayers("./temp/400_0044_land.json", QStringLiteral("地籍"), "LD");
-    addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("法定騎樓"),
-                    "AL");
-    addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("建築物"),
-                    "BU");
+    initLandDefine("./temp/400_0044_land.json");
+    initLayerDefine("./temp/400_0044_polygon.json");
+    // addVectorLayers("./temp/400_0044_land.json", QStringLiteral("地籍"),
+    // "LD");
+    // addVectorLayers("./temp/400_0044_polygon.json",
+    // QStringLiteral("法定騎樓"),
+    //                 "AL");
+    // addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("建築物"),
+    //                 "BU");
 
     //! 連結
     connect(ui->actionToggle_Editing, SIGNAL(triggered()), this,
@@ -313,6 +313,13 @@ void BcmsApp::resetMap() {
     mMapCanvasLayers.clear();
     mMapCanvas->setTheme("");
 }
+
+// void BcmsApp::loadLayerIntoMap() {
+//     QgsProject::instance()->clear();
+//     foreach (const auto ele, mMapCanvasLayers) {
+//         QgsProject::instance()->addMapLayer()
+//     }
+// }
 
 void BcmsApp::log() { qDebug() << tr("in"); }
 
@@ -618,97 +625,76 @@ void BcmsApp::initLandDefine(QString filePath) {
     // 例外退出
     if (!checkGeoJSON(filePath)) return;
 
-    QJsonArray *tempArr = GeoViewer::instance()->getFeaturedef();
-    try {
-        foreach (const QJsonValue &value, *tempArr) {
-            // 檢查元素是否是 QJsonObject
-            if (value.isObject()) {
-                auto valObj = value.toObject();
-                // 找出地籍定義
-                if (valObj.contains("symbol_type") &&
-                    valObj.value("symbol_type") == "LD") {
-                    // 宣告地籍圖層
-                    const QgsVectorLayer::LayerOptions layerOptions{
-                        QgsProject::instance()->transformContext()};
-                    QgsVectorLayer *landLayer = new QgsVectorLayer(
-                        filePath, QStringLiteral("地籍"), "ogr", layerOptions);
-                }
-            } else
-                qDebug() << value.toString();
-        }
-    } catch (const std::exception &e) {
-        qDebug() << "Exception occurred while init featuredef:" << e.what();
-    }
+    // 宣告地籍圖層
+    const QgsVectorLayer::LayerOptions layerOptions{
+        QgsProject::instance()->transformContext()};
+    QgsVectorLayer *layer = new QgsVectorLayer(
+        filePath, BcmsFeaturedef::instance().getSymbolDesc("LD"), "ogr",
+        layerOptions);
+
+    // 圖層樣式設定
+    layer->setRenderer(BcmsFeaturedef::instance().getSymbolRenderer("LD"));
+
+    // 圖層文字設定
+    QgsPalLayerSettings layerLabelSetting;
+    layerLabelSetting.fieldName = layer->fields()[0].name();
+    layerLabelSetting.drawLabels = true;
+    layerLabelSetting.centroidWhole = true;
+    layer->setLabeling(new QgsVectorLayerSimpleLabeling(layerLabelSetting));
+    layer->setLabelsEnabled(true);
+    layer->updateFields();
+    layer->setReadOnly(true);  // 地籍設定唯讀
+
+    // 加入圖層
+    QgsProject::instance()->addMapLayer(layer);
+    mMapCanvasLayers.append(layer);
+    mMapCanvas->setExtent(layer->extent());
+    mMapCanvas->setLayers(mMapCanvasLayers);
+    mMapCanvas->setVisible(true);
+    mMapCanvas->freeze(false);
+    mMapCanvas->refresh();
 }
 
 void BcmsApp::initLayerDefine(QString filePath) {
     // 例外退出
     if (!checkGeoJSON(filePath)) return;
 
-    QJsonArray *tempArr = GeoViewer::instance()->getFeaturedef();
-
-#ifdef DEVELOPING
-    qDebug() << "### DEV001: "
-             << "featuredef JSON test";
-
-    qDebug() << "asdf" << tempArr->at(0).toObject().value("fdesc").toString();
-    if (!tempArr->isEmpty()) {
-        qDebug() << "is not empty";
-        // 获取第一个元素的 QJsonObject
-        QJsonObject firstObject = tempArr->at(0).toObject();
-
-        // 检查 symbol_type 字段是否存在
-        if (firstObject.contains("symbol_type")) {
-            qDebug() << "has symbol_type";
-            // 获取 symbol_type 字段的值
-            QJsonValue symbolTypeValue = firstObject.value("symbol_type");
-
-            // 检查 symbol_type 的值是否为数组
-            if (symbolTypeValue.isArray()) {
-                qDebug() << "symbol_type is array";
-                QJsonArray symbolTypeArray = symbolTypeValue.toArray();
-
-                // 检查数组中是否有至少一个元素
-                if (!symbolTypeArray.isEmpty()) {
-                    qDebug() << "symbol_type is not empty";
-                    // 获取第一个元素的 QJsonObject
-                    QJsonObject symbolTypeObject =
-                        symbolTypeArray.at(0).toObject();
-
-                    // 检查 Type 字段是否存在
-                    if (symbolTypeObject.contains("Type")) {
-                        // 获取 Type 字段的值
-                        QString typeValue =
-                            symbolTypeObject.value("Type").toString();
-                        qDebug() << "Type:" << typeValue;
-                    }
-                }
-            }
-        }
-    }
-    qDebug() << "### END DEV001 ###";
-#endif
-
     try {
-        foreach (const QJsonValue &value, *tempArr) {
-            // 檢查元素是否是 QJsonObject
-            if (value.isObject()) {
-                // 將 QJsonValue 轉換為 QJsonObject
-                QJsonObject layerFeatureObj = value.toObject();
+        auto layers = BcmsFeaturedef::instance().getIdList();
+        foreach (const QString &id, *layers) {
+            // 宣告地籍圖層
+            const QgsVectorLayer::LayerOptions layerOptions{
+                QgsProject::instance()->transformContext()};
+            QgsVectorLayer *layer = new QgsVectorLayer(
+                filePath, BcmsFeaturedef::instance().getSymbolDesc(id), "ogr",
+                layerOptions);
 
-                // layerOptions.
-                const QgsVectorLayer::LayerOptions layerOptions{
-                    QgsProject::instance()->transformContext()};
+            // 圖層檢索
+            layer->setSubsetString("\"layer\" = '" + id + "'");
 
-                // 1. defind layer.
-                QgsVectorLayer *layer = new QgsVectorLayer(
-                    filePath, layerFeatureObj.value("fdesc").toString(),
-                    "sysonline Inc", layerOptions);
-            } else
-                qDebug() << value.toString();
+            QgsPalLayerSettings layerLabelSetting;
+            layerLabelSetting.fieldName = layer->fields().field("label").name();
+            layerLabelSetting.drawLabels = true;
+            layerLabelSetting.centroidWhole = true;
+            layer->setLabeling(
+                new QgsVectorLayerSimpleLabeling(layerLabelSetting));
+            layer->setLabelsEnabled(true);
+
+            // 圖層樣式設定
+            layer->setRenderer(
+                BcmsFeaturedef::instance().getSymbolRenderer(id));
+
+            // 加入圖層
+            QgsProject::instance()->addMapLayer(layer);
+            mMapCanvasLayers.append(layer);
+            mMapCanvas->setExtent(layer->extent());
+            mMapCanvas->setLayers(mMapCanvasLayers);
+            mMapCanvas->setVisible(true);
+            mMapCanvas->freeze(false);
+            mMapCanvas->refresh();
         }
     } catch (const std::exception &e) {
-        qDebug() << "Exception occurred while init featuredef:" << e.what();
+        qWarning() << e.what();
     }
 }
 
@@ -730,69 +716,6 @@ void BcmsApp::addVectorLayers(QString filePath, QString DisplayName,
     QgsFillSymbol *fillSymbol = new QgsFillSymbol();
     QgsPalLayerSettings layerLabelSetting;
     QgsEditFormConfig formConfig = layer->editFormConfig();
-
-    auto tempArr = GeoViewer::instance()->getFeaturedef();
-
-    // foreach (const QJsonValue &value, *tempArr) {
-    //     try {
-    //         // 檢查元素是否是 QJsonObject
-    //         if (value.isObject()) {
-    //             // 將 QJsonValue 轉換為 QJsonObject
-    //             QJsonObject object = value.toObject();
-
-    //             if (object.contains("symbol_type") &&
-    //             object.contains("fname") && object.value("fname").toString()
-    //             == )
-    //         }
-    //     } catch (const std::exception &e) {
-    //         qDebug() << "Exception occurred while searching featuredef:"
-    //                  << e.what();
-    //     }
-    // }
-
-#ifdef DEVELOPING
-    qDebug()              << "### DEV001: "
-             << "featuredef JSON test";
-
-    qDebug() << "asdf" << tempArr->at(0).toObject().value("fdesc").toString();
-    if (!tempArr->isEmpty()) {
-        qDebug() << "is not empty";
-        // 获取第一个元素的 QJsonObject
-        QJsonObject firstObject = tempArr->at(0).toObject();
-
-        // 检查 symbol_type 字段是否存在
-        if (firstObject.contains("symbol_type")) {
-            qDebug() << "has symbol_type";
-            // 获取 symbol_type 字段的值
-            QJsonValue symbolTypeValue = firstObject.value("symbol_type");
-
-            // 检查 symbol_type 的值是否为数组
-            if (symbolTypeValue.isArray()) {
-                qDebug() << "symbol_type is array";
-                QJsonArray symbolTypeArray = symbolTypeValue.toArray();
-
-                // 检查数组中是否有至少一个元素
-                if (!symbolTypeArray.isEmpty()) {
-                    qDebug() << "symbol_type is not empty";
-                    // 获取第一个元素的 QJsonObject
-                    QJsonObject symbolTypeObject =
-                        symbolTypeArray.at(0).toObject();
-
-                    // 检查 Type 字段是否存在
-                    if (symbolTypeObject.contains("Type")) {
-                        // 获取 Type 字段的值
-                        QString typeValue =
-                            symbolTypeObject.value("Type").toString();
-                        qDebug() << "Type:" << typeValue;
-                    }
-                }
-            }
-        }
-    }
-    qDebug() << "### END DEV001 ###";
-#endif
-
-    // 2. set layer setting.
 
     // 2. layer setting.
     if (layerTypes == "LD") {
@@ -859,9 +782,7 @@ void BcmsApp::addVectorLayers(QString filePath, QString DisplayName,
         temp->setStrokeStyle(Qt::SolidLine);      // 設定邊框渲染樣式
 
         fillSymbol->changeSymbolLayer(0, landSymbolLayer);
-        if (fillSymbol->insertSymbolLayer(1, temp)) {
-            qDebug() << "k";
-        }
+        fillSymbol->insertSymbolLayer(1, temp);
         layer->setRenderer(new QgsSingleSymbolRenderer(fillSymbol));
     }
 
@@ -886,10 +807,10 @@ void BcmsApp::initLayerTreeView() {
 
     mLayerTreeCanvasBridge = new QgsLayerTreeMapCanvasBridge(
         QgsProject::instance()->layerTreeRoot(), mMapCanvas, this);
-    connect(QgsProject::instance(), SIGNAL(writeProject(QDomDocument &)),
-            mLayerTreeCanvasBridge, SLOT(writeProject(QDomDocument &)));
-    connect(QgsProject::instance(), SIGNAL(readProject(QDomDocument)),
-            mLayerTreeCanvasBridge, SLOT(readProject(QDomDocument)));
+    // connect(QgsProject::instance(), SIGNAL(writeProject(QDomDocument &)),
+    //         mLayerTreeCanvasBridge, SLOT(writeProject(QDomDocument &)));
+    // connect(QgsProject::instance(), SIGNAL(readProject(QDomDocument)),
+    //         mLayerTreeCanvasBridge, SLOT(readProject(QDomDocument)));
     connect(QgsProject::instance()->layerTreeRegistryBridge(),
             SIGNAL(addedLayersToLayerTree(QList<QgsMapLayer *>)), this,
             SLOT(autoSelectAddedLayer(QList<QgsMapLayer *>)));

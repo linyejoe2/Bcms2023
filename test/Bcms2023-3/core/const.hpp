@@ -17,13 +17,12 @@ class CONST {
     }
 
    private:
+    QSettings *setting;
+    
+
     CONST() {
         setting = new QSettings("./Bcms2023.ini", QSettings::IniFormat);
-        // setting->setValue("geoViewerJSServiceUrl", "asdfas");
-        // qDebug() << QObject::tr("url: ") <<
-        // setting->value("geoViewerJSServiceUrl").toString();
     };
-    QSettings *setting;
 };
 
 #endif  // CONST_H
