@@ -11,13 +11,32 @@
 
 #include "../services/geoviewer.h"
 
+//! 改寫 QJsonArray swap 方法
+inline void swap(QJsonValueRef val1, QJsonValueRef val2)
+{
+    QJsonValue temp(val1);
+    val1 = QJsonValue(val2);
+    val2 = temp;
+}
+
 BcmsFeaturedef::BcmsFeaturedef(QObject* parent) : QObject{parent} {
     //! init featuredef
+    // 呼叫服務讀出 JSON
     auto __rowData =
         GeoViewer::instance()->connectApi("/api/v3/featuredef/get").toUtf8();
     __object = QJsonDocument::fromJson(__rowData);
     qDebug() << "featuredef raw data: " << __rowData;
-    foreach (const QJsonValue& val, __object.array()) {
+
+    // 按照高度排序圖層定義
+    auto arr = __object.array();
+    std::sort(arr.begin(), arr.end(),
+              [](const QJsonValue& val1, const QJsonValue& val2) -> bool {
+                  return val1.toObject()["z_index"].toInt() <
+                         val2.toObject()["z_index"].toInt();
+              });
+
+    // 轉換 jsonArr to QVector
+    foreach (const QJsonValue& val, arr) {
         if (val.isObject()) {
             auto obj = val.toObject();
             if (obj.contains("fname") && obj["fname"] != "LD")

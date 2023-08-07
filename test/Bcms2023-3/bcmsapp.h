@@ -89,6 +89,9 @@ class BcmsApp : public QMainWindow {
     //! 開啟地段選擇畫面
     void openMBcmsLoadForm();
 
+    //! 測試
+    void testFunc();
+
    private:
     Ui::BcmsApp *ui;
 
@@ -98,6 +101,7 @@ class BcmsApp : public QMainWindow {
     QgsLayerTreeView *mLayerTreeView;
     //! 圖層列表
     QList<QgsMapLayer *> mMapCanvasLayers;
+    // QList<QPair<int, QgsMapLayer *>> mMapCanvasLayers;
     //! 畫布與圖層管理器的連接器
     QgsLayerTreeMapCanvasBridge *mLayerTreeCanvasBridge;
     //! 訊息列
@@ -134,7 +138,7 @@ class BcmsApp : public QMainWindow {
     void resetMap();
 
     // //! 從圖層管理器內載入所有圖層
-    // void loadLayerIntoMap();
+    void loadLayerIntoMap();
 
     //! 檢查 GeoJSON 文件
     bool checkGeoJSON(const QString &filePath);

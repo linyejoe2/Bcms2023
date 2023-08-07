@@ -142,8 +142,8 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
                                                  mAdvancedDigitizingDockWidget);
 
     //! 載入圖層
-    initLandDefine("./temp/400_0044_land.json");
     initLayerDefine("./temp/400_0044_polygon.json");
+    initLandDefine("./temp/400_0044_land.json");
     // addVectorLayers("./temp/400_0044_land.json", QStringLiteral("地籍"),
     // "LD");
     // addVectorLayers("./temp/400_0044_polygon.json",
@@ -166,6 +166,12 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     connect(ui->actionDelete_Selected, &QAction::triggered, this,
             [=] { deleteSelected(nullptr, nullptr, true); });
     connect(mBcmsLoadForm, &BcmsLoadForm::loadSignal, this, &BcmsApp::loadLand);
+
+#ifdef DEVELOPING
+    connect(ui->actionTest1, SIGNAL(triggered()), this, SLOT(testFunc()));
+#else
+    ui->actionTest1->setVisible(false);
+#endif
 
     mMessageBar->pushMessage(QStringLiteral("成功載入地圖！"), tr(""),
                              Qgis::MessageLevel::Info);
@@ -208,17 +214,22 @@ void BcmsApp::loadLand(const ILandCode &landCode) {
         qDebug() << "Failed to write response data to file: " << filename;
     }
 
-    // 清理後載入地圖
+    // 清理
     resetMap();
+
+    // 載入地圖
     initLandDefine(filename);
-    // addVectorLayers(filename, QStringLiteral("地籍"), LD);
+
+    // 載入建築物套繪資料
+    loadBuilding(landCode);
+
+    // 定位到該去的地號
+    mMapCanvasLayers.swapItemsAt(0, mMapCanvasLayers.length() - 1); //@ 把排在陣列最後的地籍挪到最前面
+    setLocate(landCode);
 
     // 最後修改程式名稱為加上地區地段
     this->setWindowTitle("BcmsApp " + landCode.zonDesc + "-" +
                          landCode.sectionDesc);
-
-    // 載入建築物套繪資料
-    loadBuilding(landCode);
 }
 
 void BcmsApp::loadBuilding(const ILandCode &landCode) {
@@ -256,9 +267,6 @@ void BcmsApp::loadBuilding(const ILandCode &landCode) {
     // addVectorLayers(filename, QStringLiteral("法定騎樓"), AL);
     // addVectorLayers(filename, QStringLiteral("建築物"), BU);
     // addVectorLayers(filename, QStringLiteral("其他"), OTHER);
-
-    // 定位到該去的地號
-    setLocate(landCode);
 }
 void BcmsApp::setLocate(const ILandCode &landCode) {
     auto landLayer = findLayerByName(QStringLiteral("地籍"));
@@ -283,15 +291,22 @@ void BcmsApp::setLocate(const ILandCode &landCode) {
         // 获取要素的几何信息
         QgsGeometry geometry = feat.geometry();
         QgsRectangle boundingBox = geometry.boundingBox();
+        qDebug() << "boundingBox: " << boundingBox.toString();
         boundingBox.scale(8);
 
         // 定位到要素的几何范围
         mMapCanvas->setExtent(boundingBox);
+        mMapCanvas->setVisible(true);
+        mMapCanvas->freeze(false);
         mMapCanvas->refresh();
-    }
+    } else
+        qDebug() << QStringLiteral("地圖載入失敗!!!: ");
 
     mMessageBar->pushMessage(QStringLiteral("成功載入地圖！"), tr(""),
                              Qgis::MessageLevel::Info);
+#ifdef DEVELOPING
+    qDebug() << "done setLocate";
+#endif
 }
 
 QgsVectorLayer *BcmsApp::findLayerByName(const QString &name) {
@@ -300,6 +315,7 @@ QgsVectorLayer *BcmsApp::findLayerByName(const QString &name) {
         if (vectorLayer) {
             // 检查图层的 name 属性是否匹配
             if (vectorLayer->name() == name) {
+                // qDebug() << vectorLayer->name();
                 return vectorLayer;
             }
         }
@@ -314,16 +330,52 @@ void BcmsApp::resetMap() {
     mMapCanvas->setTheme("");
 }
 
-// void BcmsApp::loadLayerIntoMap() {
-//     QgsProject::instance()->clear();
-//     foreach (const auto ele, mMapCanvasLayers) {
-//         QgsProject::instance()->addMapLayer()
-//     }
-// }
+void BcmsApp::loadLayerIntoMap() {
+    QgsProject::instance()->clear();
+    foreach (const auto ele, mMapCanvasLayers) {
+        QgsProject::instance()->addMapLayer(ele);
+    }
+}
 
 void BcmsApp::log() { qDebug() << tr("in"); }
 
 void BcmsApp::openMBcmsLoadForm() { mBcmsLoadForm->show(); }
+
+void BcmsApp::testFunc() {
+    try {
+        auto landLayer = findLayerByName(QStringLiteral("地籍"));
+
+        QgsFeatureRequest request;
+        request.setFilterExpression(
+            QString("\"landmon\" = '0001' AND \"landchild\" = '0000'"));
+
+        QgsFeatureIterator it = landLayer->getFeatures(request);
+        if (it.isValid()) {
+            // 抓出第一個符合的要素
+            QgsFeature feat;
+            it.nextFeature(feat);
+
+            // 获取要素的几何信息
+            QgsGeometry geometry = feat.geometry();
+            QgsRectangle boundingBox = geometry.boundingBox();
+            qDebug() << "boundingBox: " << boundingBox.toString();
+            boundingBox.scale(8);
+
+            // 定位到要素的几何范围
+            const QgsRectangle largeExtent(-610861, 5101721, 2523921, 6795055);
+            mMapCanvas->setExtent(boundingBox);
+        } else
+            qDebug() << QStringLiteral("地圖載入失敗!!!: ");
+
+        mMapCanvas->refresh();
+        messageBar()->pushMessage(tr("Successful"),
+                                  Qgis::MessageLevel::Success);
+    } catch (const std::exception &e) {
+        qDebug() << "in testFunc catch!";
+        qWarning() << e.what();
+        messageBar()->pushMessage(tr("Failed"), Qgis::MessageLevel::Critical);
+    }
+}
 
 void BcmsApp::deleteSelected(QgsMapLayer *layer, QWidget *,
                              bool checkFeaturesVisible) {
@@ -653,6 +705,10 @@ void BcmsApp::initLandDefine(QString filePath) {
     mMapCanvas->setVisible(true);
     mMapCanvas->freeze(false);
     mMapCanvas->refresh();
+
+#ifdef DEVELOPING
+    qDebug() << "done initLand";
+#endif
 }
 
 void BcmsApp::initLayerDefine(QString filePath) {

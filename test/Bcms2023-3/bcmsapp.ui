@@ -23,7 +23,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuedit">
@@ -56,6 +56,7 @@
    <addaction name="actionAdd_Feature"/>
    <addaction name="actionSelect_Rectangle"/>
    <addaction name="actionDelete_Selected"/>
+   <addaction name="actionTest1"/>
   </widget>
   <action name="actionToggle_Editing">
    <property name="checkable">
@@ -112,6 +113,15 @@
    </property>
    <property name="toolTip">
     <string>開啟地段</string>
+   </property>
+  </action>
+  <action name="actionTest1">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/img/favourites.png</normaloff>:/img/favourites.png</iconset>
+   </property>
+   <property name="text">
+    <string>Test1</string>
    </property>
   </action>
  </widget>
