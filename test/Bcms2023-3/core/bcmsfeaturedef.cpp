@@ -25,7 +25,7 @@ BcmsFeaturedef::BcmsFeaturedef(QObject* parent) : QObject{parent} {
     auto __rowData =
         GeoViewer::instance()->connectApi("/api/v3/featuredef/get").toUtf8();
     __object = QJsonDocument::fromJson(__rowData);
-    qDebug() << "featuredef raw data: " << __rowData;
+    // qDebug() << "featuredef raw data: " << __rowData;
 
     // 按照高度排序圖層定義
     auto arr = __object.array();

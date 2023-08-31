@@ -77,6 +77,8 @@ class BcmsApp : public QMainWindow {
     void toggleEditing();
     //! 新增一個圖層
     void addFeature();
+    //! 新增一個圖層
+    void addFeature2();
     //! 自動選擇圖層
     void autoSelectAddedLayer(QList<QgsMapLayer *> layers);
     //! 切換選擇的圖層
@@ -91,6 +93,9 @@ class BcmsApp : public QMainWindow {
 
     //! 測試
     void testFunc();
+
+    //! 更新 toolBar 狀態
+    void updateToolBarState(QgsMapLayer *layer);
 
    private:
     Ui::BcmsApp *ui;

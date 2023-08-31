@@ -57,6 +57,7 @@
    <addaction name="actionSelect_Rectangle"/>
    <addaction name="actionDelete_Selected"/>
    <addaction name="actionTest1"/>
+   <addaction name="actionAdd_Feature_2"/>
   </widget>
   <action name="actionToggle_Editing">
    <property name="checkable">
@@ -122,6 +123,18 @@
    </property>
    <property name="text">
     <string>Test1</string>
+   </property>
+  </action>
+  <action name="actionAdd_Feature_2">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/img/symbologyAdd.png</normaloff>:/img/symbologyAdd.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add_Feature_2</string>
+   </property>
+   <property name="toolTip">
+    <string>Add_Feature_2</string>
    </property>
   </action>
  </widget>

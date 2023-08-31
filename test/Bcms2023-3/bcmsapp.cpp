@@ -157,6 +157,8 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
             SLOT(toggleEditing()));
     connect(ui->actionAdd_Feature, SIGNAL(triggered()), this,
             SLOT(addFeature()));
+    connect(ui->actionAdd_Feature_2, SIGNAL(triggered()), this,
+            SLOT(addFeature2()));
     connect(mLayerTreeView, SIGNAL(currentLayerChanged(QgsMapLayer *)), this,
             SLOT(changeSelectLayer(QgsMapLayer *)));
     connect(ui->actionSelect_Rectangle, SIGNAL(triggered()), this,
@@ -166,6 +168,8 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     connect(ui->actionDelete_Selected, &QAction::triggered, this,
             [=] { deleteSelected(nullptr, nullptr, true); });
     connect(mBcmsLoadForm, &BcmsLoadForm::loadSignal, this, &BcmsApp::loadLand);
+    connect(mLayerTreeView, SIGNAL(currentLayerChanged(QgsMapLayer *)), this,
+            SLOT(updateToolBarState(QgsMapLayer *)));
 
 #ifdef DEVELOPING
     connect(ui->actionTest1, SIGNAL(triggered()), this, SLOT(testFunc()));
@@ -178,6 +182,14 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
 }
 
 BcmsApp::~BcmsApp() { delete ui; }
+
+void BcmsApp::updateToolBarState(QgsMapLayer *layer) {
+    // 更新編輯按鈕狀態
+    if (layer->isEditable()) {
+        ui->actionToggle_Editing->setChecked(true);
+    } else
+        ui->actionToggle_Editing->setChecked(false);
+}
 
 void BcmsApp::loadLand(const ILandCode &landCode) {
     //@ qDebug() << "landmon: " << landCode.landmon;
@@ -224,7 +236,8 @@ void BcmsApp::loadLand(const ILandCode &landCode) {
     loadBuilding(landCode);
 
     // 定位到該去的地號
-    mMapCanvasLayers.swapItemsAt(0, mMapCanvasLayers.length() - 1); //@ 把排在陣列最後的地籍挪到最前面
+    mMapCanvasLayers.swapItemsAt(
+        0, mMapCanvasLayers.length() - 1);  //@ 把排在陣列最後的地籍挪到最前面
     setLocate(landCode);
 
     // 最後修改程式名稱為加上地區地段
@@ -586,6 +599,15 @@ void BcmsApp::addFeature() {
     //                              QgsMapToolCapture::CaptureNone);
     // mMapCanvas->setMapTool(addFeatureTool);
     mMapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::AddFeature));
+}
+
+void BcmsApp::addFeature2() {
+    auto AreaLayer = findLayerByName(QStringLiteral("法定空地"));
+    mMessageBar->pushMessage(QStringLiteral("請繪製法定空地範圍"), tr(""),
+                             Qgis::MessageLevel::Info);
+    mMapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::AddFeature));
+    AreaLayer->startEditing();
+    mLayerTreeView->setCurrentLayer(AreaLayer);
 }
 
 void BcmsApp::selectFeatures() {
