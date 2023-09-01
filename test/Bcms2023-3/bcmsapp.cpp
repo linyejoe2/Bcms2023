@@ -27,6 +27,7 @@
 // #include <qgsproviderregistry.h>
 // #include <qgsrasterlayer.h>
 #include <qgslayertree.h>
+#include <qgsmapcanvassnappingutils.h>
 #include <qgsmaptool.h>
 #include <qgsmaptoolcapture.h>
 #include <qgsvectorlayer.h>
@@ -66,6 +67,7 @@
 // #include "bcmsloadform.h"
 // #include "core/const.hpp"
 #include "MapTools/qgsmaptooladdfeature.h"
+#include "Widget/qgssnappingwidget.h"
 #include "core/bcmsfeaturedef.h"
 #include "core/qgsguivectorlayertools.h"
 #include "maptools/qgsappmaptools.h"
@@ -140,6 +142,35 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     //! 初始化工具列工具
     mMapTools = std::make_unique<QgsAppMapTools>(mMapCanvas,
                                                  mAdvancedDigitizingDockWidget);
+
+    //! 初始化鎖點工具
+    mSnappingDialog =
+        new QgsSnappingWidget(QgsProject::instance(), mMapCanvas, this);
+    connect(mSnappingDialog, &QgsSnappingWidget::snappingConfigChanged,
+            QgsProject::instance(), [=] {
+                QgsProject::instance()->setSnappingConfig(
+                    mSnappingDialog->config());
+            });
+    QgsDockWidget *dock = new QgsDockWidget(
+        tr("Snapping and Digitizing Options"), BcmsApp::instance());
+    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    dock->setWidget(mSnappingDialog);
+    dock->setObjectName(QStringLiteral("Snapping and Digitizing Options"));
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+    mSnappingDialogContainer = dock;
+    mSnappingUtils = new QgsMapCanvasSnappingUtils(mMapCanvas, this);
+    mMapCanvas->setSnappingUtils(mSnappingUtils);
+    connect(QgsProject::instance(), &QgsProject::snappingConfigChanged,
+            mSnappingUtils, &QgsSnappingUtils::setConfig);
+
+    // QDialog *dialog = new QDialog(this, Qt::Tool);
+    // dialog->setObjectName(QStringLiteral("snappingSettings"));
+    // dialog->setWindowTitle(tr("Project Snapping Settings"));
+    // QgsGui::enableAutoGeometryRestore(dialog);
+    // QVBoxLayout *layout = new QVBoxLayout(dialog);
+    // layout->addWidget(mSnappingDialog);
+    // layout->setContentsMargins(0, 0, 0, 0);
+    // mSnappingDialogContainer = dialog;
 
     //! 載入圖層
     initLayerDefine("./temp/400_0044_polygon.json");
@@ -244,6 +275,8 @@ void BcmsApp::loadLand(const ILandCode &landCode) {
     this->setWindowTitle("BcmsApp " + landCode.zonDesc + "-" +
                          landCode.sectionDesc);
 }
+
+void BcmsApp::snappingOptions() { mSnappingDialogContainer->show(); }
 
 void BcmsApp::loadBuilding(const ILandCode &landCode) {
     // 建立 QNetworkAccessManager 對象

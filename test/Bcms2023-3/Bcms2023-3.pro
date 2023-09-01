@@ -21,6 +21,8 @@ SOURCES += \
     MapTools/qgsmaptoolselect.cpp \
     MapTools/qgsmaptoolselectionhandler.cpp \
     MapTools/qgsmaptoolselectutils.cpp \
+    Widget/qgssnappinglayertreemodel.cpp \
+    Widget/qgssnappingwidget.cpp \
     bcmsloadform.cpp \
     core/bcmsfeaturedef.cpp \
     core/qgsguivectorlayertools.cpp \
@@ -35,6 +37,8 @@ HEADERS += \
     MapTools/qgsmaptoolselect.h \
     MapTools/qgsmaptoolselectionhandler.h \
     MapTools/qgsmaptoolselectutils.h \
+    Widget/qgssnappinglayertreemodel.h \
+    Widget/qgssnappingwidget.h \
     bcmsapp.h \
     bcmsloadform.h \
     core/bcmsfeaturedef.h \

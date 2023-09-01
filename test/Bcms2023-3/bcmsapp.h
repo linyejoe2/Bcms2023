@@ -3,6 +3,8 @@
 
 class QgsAppMapTools;
 class QgsGuiVectorLayerTools;
+class QgsSnappingWidget;
+class QgsSnappingUtils;
 class BcmsLoadForm;
 
 #include <QMainWindow>
@@ -71,6 +73,9 @@ class BcmsApp : public QMainWindow {
     //! 凍結畫布或解凍
     void freezeCanvases(bool frozen = true) { mMapCanvas->freeze(frozen); }
 
+    //! shows the snapping Options
+    void snappingOptions();
+
    public slots:
     void log();
     //! 切換編輯模式
@@ -119,6 +124,10 @@ class BcmsApp : public QMainWindow {
     QgsVectorLayerTools *mVectorLayerTools;
     //! 圖層選擇畫面
     BcmsLoadForm *mBcmsLoadForm;
+    //! 鎖點小工具
+    QWidget *mSnappingDialogContainer = nullptr;
+    QgsSnappingWidget *mSnappingDialog = nullptr;
+    QgsSnappingUtils *mSnappingUtils = nullptr;
     //! 單例這個類
     static BcmsApp *sInstance;
 
