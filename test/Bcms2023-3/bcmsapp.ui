@@ -56,8 +56,8 @@
    <addaction name="actionAdd_Feature"/>
    <addaction name="actionSelect_Rectangle"/>
    <addaction name="actionDelete_Selected"/>
-   <addaction name="actionTest1"/>
    <addaction name="actionAdd_Feature_2"/>
+   <addaction name="actionTest1"/>
   </widget>
   <action name="actionToggle_Editing">
    <property name="checkable">
@@ -126,6 +126,9 @@
    </property>
   </action>
   <action name="actionAdd_Feature_2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/img/symbologyAdd.png</normaloff>:/img/symbologyAdd.png</iconset>
@@ -134,7 +137,7 @@
     <string>Add_Feature_2</string>
    </property>
    <property name="toolTip">
-    <string>Add_Feature_2</string>
+    <string>新增新建物</string>
    </property>
   </action>
  </widget>

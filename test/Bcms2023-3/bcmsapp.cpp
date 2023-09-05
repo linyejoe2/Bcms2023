@@ -636,6 +636,14 @@ void BcmsApp::addFeature() {
 }
 
 void BcmsApp::addFeature2() {
+    // 如果被按起來，就走儲存那段
+    if (!ui->actionAdd_Feature_2->isChecked()) {
+        commitAllLayers();
+        mMessageBar->pushMessage(QStringLiteral("建築物新增成功！"), tr(""),
+                                 Qgis::MessageLevel::Info);
+        return;
+    }
+
     auto areaLayer = findLayerByName(QStringLiteral("法定空地"));
     mMessageBar->pushMessage(QStringLiteral("請繪製法定空地範圍"), tr(""),
                              Qgis::MessageLevel::Info);
@@ -666,13 +674,7 @@ void BcmsApp::onAreaAdd(QgsFeatureId fid) {
     int ret = msgBox.exec();
 
     // 根據使用者的選擇執行不同的操作
-    if (ret == QMessageBox::Ok) {
-        qDebug() << "add Area!";
-        // areaLayer->commitChanges();
-        mMessageBar->pushMessage(
-            QStringLiteral("法定空地範圍新增成功，請繪製其他圖層"), tr(""),
-            Qgis::MessageLevel::Info);
-    } else {
+    if (ret == QMessageBox::Abort) {
         areaLayer->deleteFeature(fid);
         areaLayer->commitChanges();
         mMessageBar->pushMessage(QStringLiteral("取消新增建築物！"), tr(""),
@@ -680,7 +682,17 @@ void BcmsApp::onAreaAdd(QgsFeatureId fid) {
         updateToolBarState(areaLayer);
         mMapCanvas->setMapTool(
             mMapTools->mapTool(QgsAppMapTools::SelectFeatures));
+        return;
     }
+    qDebug() << "add Area!";
+    // areaLayer->commitChanges();
+    mMessageBar->pushMessage(
+        QStringLiteral("法定空地範圍新增成功，請繪製其他圖層"), tr(""),
+        Qgis::MessageLevel::Info);
+    areaLayer->commitChanges();
+
+    // 開始繪製其他圖層
+    editAllLayers();
 }
 
 void BcmsApp::selectFeatures() {
@@ -712,6 +724,30 @@ void BcmsApp::toggleEditing() {
     } else {
         selectedLayer->commitChanges();
     }
+}
+
+void BcmsApp::editAllLayers() {
+    for (QgsMapLayer *layer : mMapCanvasLayers) {
+        QgsVectorLayer *vectorLayer = dynamic_cast<QgsVectorLayer *>(layer);
+        if (vectorLayer && vectorLayer->name() != QStringLiteral("法定空地")) {
+            vectorLayer->startEditing();
+        }
+    }
+    auto l =
+        dynamic_cast<QgsVectorLayer *>(mLayerTreeView->selectedLayers()[0]);
+    updateToolBarState(l);
+}
+
+void BcmsApp::commitAllLayers() {
+    for (QgsMapLayer *layer : mMapCanvasLayers) {
+        QgsVectorLayer *vectorLayer = dynamic_cast<QgsVectorLayer *>(layer);
+        if (vectorLayer && vectorLayer->name() != QStringLiteral("法定空地")) {
+            vectorLayer->commitChanges();
+        }
+    }
+    auto l =
+        dynamic_cast<QgsVectorLayer *>(mLayerTreeView->selectedLayers()[0]);
+    updateToolBarState(l);
 }
 
 void BcmsApp::autoSelectAddedLayer(QList<QgsMapLayer *> layers) {
@@ -988,8 +1024,20 @@ void BcmsApp::keyPressEvent(QKeyEvent *event) {
     } else if (event->key() == Qt::Key_N) {
         qDebug() << "N key pressed";
         QgsSettings().setValue(QStringLiteral("/Cad/CommonAngle"), 0.0);
+    } else if (event->key() == Qt::Key_Delete) {
+        qDebug() << "Delete key pressed";
+        if (mLayerTreeView->selectedLayers().empty()) {
+            QMainWindow::keyPressEvent(event);
+            return;
+        }
+        auto l =
+            dynamic_cast<QgsVectorLayer *>(mLayerTreeView->selectedLayers()[0]);
+        if (l->selectedFeatureCount() > 0) {
+            emit ui->actionDelete_Selected->trigger();
+        }
     }
 
     // 调用基类的 keyPressEvent 以确保正確處理其他事件
     QMainWindow::keyPressEvent(event);
+    event->accept();
 }

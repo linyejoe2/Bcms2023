@@ -81,6 +81,10 @@ class BcmsApp : public QMainWindow {
     void onAreaAdd(QgsFeatureId fid);
     //! 切換編輯模式
     void toggleEditing();
+    //! 編輯所有可編輯的圖層(不包含法空)
+    void editAllLayers();
+    //! 確認修改所有編輯的圖層(不包含法空)
+    void commitAllLayers();
     //! 新增一個圖層
     void addFeature();
     //! 新增一個圖層
