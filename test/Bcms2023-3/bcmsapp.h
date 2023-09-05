@@ -78,6 +78,7 @@ class BcmsApp : public QMainWindow {
 
    public slots:
     void log();
+    void onAreaAdd(QgsFeatureId fid);
     //! 切換編輯模式
     void toggleEditing();
     //! 新增一個圖層
@@ -101,6 +102,10 @@ class BcmsApp : public QMainWindow {
 
     //! 更新 toolBar 狀態
     void updateToolBarState(QgsMapLayer *layer);
+   private slots:
+
+    //! 鍵盤事件
+    void keyPressEvent(QKeyEvent *event) override;
 
    private:
     Ui::BcmsApp *ui;
@@ -151,7 +156,7 @@ class BcmsApp : public QMainWindow {
     //! 清理地圖
     void resetMap();
 
-    // //! 從圖層管理器內載入所有圖層
+    //! 從圖層管理器內載入所有圖層
     void loadLayerIntoMap();
 
     //! 檢查 GeoJSON 文件
@@ -163,5 +168,9 @@ class BcmsApp : public QMainWindow {
 
     //! 尋找圖層
     QgsVectorLayer *findLayerByName(const QString &name);
+
+    //    protected:
+    //     //! 鍵盤事件
+    //     void keyPressEvent(QKeyEvent *event) override;
 };
 #endif  // BCMSAPP_H

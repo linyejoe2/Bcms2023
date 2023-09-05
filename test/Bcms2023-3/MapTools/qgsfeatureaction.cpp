@@ -198,6 +198,9 @@ bool QgsFeatureAction::addFeature(const QgsAttributeMap &defaultAttributes,
     } else {
         mLayer->destroyEditCommand();
     }
+    if (mLayer->name() == QStringLiteral("法定空地")) {
+        emit addAreaFinished(*mFeature);
+    }
     emit addFeatureFinished();
 
     return mFeatureSaved;

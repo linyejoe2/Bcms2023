@@ -156,7 +156,7 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     dock->setAllowedAreas(Qt::AllDockWidgetAreas);
     dock->setWidget(mSnappingDialog);
     dock->setObjectName(QStringLiteral("Snapping and Digitizing Options"));
-    addDockWidget(Qt::LeftDockWidgetArea, dock);
+    addDockWidget(Qt::TopDockWidgetArea, dock);
     mSnappingDialogContainer = dock;
     mSnappingUtils = new QgsMapCanvasSnappingUtils(mMapCanvas, this);
     mMapCanvas->setSnappingUtils(mSnappingUtils);
@@ -175,13 +175,6 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     //! 載入圖層
     initLayerDefine("./temp/400_0044_polygon.json");
     initLandDefine("./temp/400_0044_land.json");
-    // addVectorLayers("./temp/400_0044_land.json", QStringLiteral("地籍"),
-    // "LD");
-    // addVectorLayers("./temp/400_0044_polygon.json",
-    // QStringLiteral("法定騎樓"),
-    //                 "AL");
-    // addVectorLayers("./temp/400_0044_polygon.json", QStringLiteral("建築物"),
-    //                 "BU");
 
     //! 連結
     connect(ui->actionToggle_Editing, SIGNAL(triggered()), this,
@@ -201,6 +194,8 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     connect(mBcmsLoadForm, &BcmsLoadForm::loadSignal, this, &BcmsApp::loadLand);
     connect(mLayerTreeView, SIGNAL(currentLayerChanged(QgsMapLayer *)), this,
             SLOT(updateToolBarState(QgsMapLayer *)));
+    connect(mMapCanvas, SIGNAL(keyPressed(QKeyEvent *)), this,
+            SLOT(keyPressEvent(QKeyEvent *)));
 
 #ifdef DEVELOPING
     connect(ui->actionTest1, SIGNAL(triggered()), this, SLOT(testFunc()));
@@ -218,8 +213,12 @@ void BcmsApp::updateToolBarState(QgsMapLayer *layer) {
     // 更新編輯按鈕狀態
     if (layer->isEditable()) {
         ui->actionToggle_Editing->setChecked(true);
-    } else
+        mMapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::AddFeature));
+    } else {
         ui->actionToggle_Editing->setChecked(false);
+        mMapCanvas->setMapTool(
+            mMapTools->mapTool(QgsAppMapTools::SelectFeatures));
+    }
 }
 
 void BcmsApp::loadLand(const ILandCode &landCode) {
@@ -227,53 +226,58 @@ void BcmsApp::loadLand(const ILandCode &landCode) {
     // qDebug() << "landchild: " << landCode.landchild;
     // qDebug() << "zon: " << landCode.zon;
     // qDebug() << "section: " << landCode.section;
+    try {
+        // 建立 QNetworkAccessManager 對象
+        QNetworkAccessManager manager;
 
-    // 建立 QNetworkAccessManager 對象
-    QNetworkAccessManager manager;
+        // 要發送的 API URL
+        QString apiUrl = CONST::instance()->getGeoViewerJSServiceUrl() +
+                         "/api/v3/land-data/get/geojson/" + landCode.zon + "/" +
+                         landCode.section;
 
-    // 要發送的 API URL
-    QString apiUrl = CONST::instance()->getGeoViewerJSServiceUrl() +
-                     "/api/v3/land-data/get/geojson/" + landCode.zon + "/" +
-                     landCode.section;
+        // 發送 API 請求，取回 data 放到 resData
+        QNetworkReply *res = manager.get(QNetworkRequest(apiUrl));
+        QEventLoop event;
+        connect(res, &QNetworkReply::finished, &event, &QEventLoop::quit);
+        event.exec();
+        QByteArray resData = res->readAll();
 
-    // 發送 API 請求，取回 data 放到 resData
-    QNetworkReply *res = manager.get(QNetworkRequest(apiUrl));
-    QEventLoop event;
-    connect(res, &QNetworkReply::finished, &event, &QEventLoop::quit);
-    event.exec();
-    QByteArray resData = res->readAll();
+        // 做檔案
+        QString filename = "./temp/" + landCode.zon + "_" + landCode.section +
+                           "_" + "land.json";
+        QFile file(filename);
 
-    // 做檔案
-    QString filename =
-        "./temp/" + landCode.zon + "_" + landCode.section + "_" + "land.json";
-    QFile file(filename);
+        // 寫入檔案
+        if (file.open(QIODevice::WriteOnly)) {
+            file.write(resData);
+            file.close();
+            qDebug() << "Response data written to file: " << filename;
+        } else {
+            qDebug() << "Failed to write response data to file: " << filename;
+        }
 
-    // 寫入檔案
-    if (file.open(QIODevice::WriteOnly)) {
-        file.write(resData);
-        file.close();
-        qDebug() << "Response data written to file: " << filename;
-    } else {
-        qDebug() << "Failed to write response data to file: " << filename;
+        // 清理
+        resetMap();
+
+        // 載入地圖
+        initLandDefine(filename);
+
+        // 載入建築物套繪資料
+        loadBuilding(landCode);
+
+        // 定位到該去的地號
+        // mMapCanvasLayers.swapItemsAt(
+        //     0,
+        //     mMapCanvasLayers.length() - 1);  //@
+        //     把排在陣列最後的地籍挪到最前面
+        setLocate(landCode);
+
+        // 最後修改程式名稱為加上地區地段
+        this->setWindowTitle("BcmsApp " + landCode.zonDesc + "-" +
+                             landCode.sectionDesc);
+    } catch (const std::exception &e) {
+        qWarning() << e.what();
     }
-
-    // 清理
-    resetMap();
-
-    // 載入地圖
-    initLandDefine(filename);
-
-    // 載入建築物套繪資料
-    loadBuilding(landCode);
-
-    // 定位到該去的地號
-    mMapCanvasLayers.swapItemsAt(
-        0, mMapCanvasLayers.length() - 1);  //@ 把排在陣列最後的地籍挪到最前面
-    setLocate(landCode);
-
-    // 最後修改程式名稱為加上地區地段
-    this->setWindowTitle("BcmsApp " + landCode.zonDesc + "-" +
-                         landCode.sectionDesc);
 }
 
 void BcmsApp::snappingOptions() { mSnappingDialogContainer->show(); }
@@ -371,9 +375,14 @@ QgsVectorLayer *BcmsApp::findLayerByName(const QString &name) {
 }
 
 void BcmsApp::resetMap() {
-    QgsProject::instance()->clear();
-    mMapCanvasLayers.clear();
-    mMapCanvas->setTheme("");
+    try {
+        // QgsProject::instance()->removeAllMapLayers();
+        QgsProject::instance()->clear();
+        mMapCanvasLayers.clear();
+        mMapCanvas->setTheme("");
+    } catch (const std::exception &e) {
+        qWarning() << e.what();
+    }
 }
 
 void BcmsApp::loadLayerIntoMap() {
@@ -635,12 +644,51 @@ void BcmsApp::addFeature() {
 }
 
 void BcmsApp::addFeature2() {
-    auto AreaLayer = findLayerByName(QStringLiteral("法定空地"));
+    auto areaLayer = findLayerByName(QStringLiteral("法定空地"));
     mMessageBar->pushMessage(QStringLiteral("請繪製法定空地範圍"), tr(""),
                              Qgis::MessageLevel::Info);
     mMapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::AddFeature));
-    AreaLayer->startEditing();
-    mLayerTreeView->setCurrentLayer(AreaLayer);
+    areaLayer->startEditing();
+    mLayerTreeView->setCurrentLayer(areaLayer);
+
+    connect(areaLayer, SIGNAL(featureAdded(QgsFeatureId)), this,
+            SLOT(onAreaAdd(QgsFeatureId)));
+}
+
+void BcmsApp::onAreaAdd(QgsFeatureId fid) {
+    auto areaLayer = findLayerByName(QStringLiteral("法定空地"));
+    auto areaFeature = areaLayer->getFeature(fid);
+    disconnect(areaLayer, SIGNAL(featureAdded(QgsFeatureId)), this,
+               SLOT(onAreaAdd(QgsFeatureId)));
+
+    // 創建一個 QMessageBox 對話框
+    QMessageBox msgBox;
+    msgBox.setText(QStringLiteral("確認新增法定空地範圍"));
+    // msgBox.setInformativeText(QStringLiteral("法定空地範圍新增成功，請繪製其他圖層"));
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Cancel);
+    msgBox.setButtonText(QMessageBox::Ok, QStringLiteral("確認"));
+    msgBox.setButtonText(QMessageBox::Cancel, QStringLiteral("取消"));
+
+    // 顯示對話框並等待使用者選擇
+    int ret = msgBox.exec();
+
+    // 根據使用者的選擇執行不同的操作
+    if (ret == QMessageBox::Ok) {
+        qDebug() << "add Area!";
+        // areaLayer->commitChanges();
+        mMessageBar->pushMessage(
+            QStringLiteral("法定空地範圍新增成功，請繪製其他圖層"), tr(""),
+            Qgis::MessageLevel::Info);
+    } else {
+        areaLayer->deleteFeature(fid);
+        areaLayer->commitChanges();
+        mMessageBar->pushMessage(QStringLiteral("取消新增建築物！"), tr(""),
+                                 Qgis::MessageLevel::Info);
+        updateToolBarState(areaLayer);
+        mMapCanvas->setMapTool(
+            mMapTools->mapTool(QgsAppMapTools::SelectFeatures));
+    }
 }
 
 void BcmsApp::selectFeatures() {
@@ -934,4 +982,22 @@ void BcmsApp::changeSelectLayer(QgsMapLayer *layer) {
     if (mMapCanvas) {
         mMapCanvas->setCurrentLayer(layer);
     }
+}
+
+void BcmsApp::keyPressEvent(QKeyEvent *event) {
+    qDebug() << "key: " << event->key();
+    if (event->key() == Qt::Key_A) {
+        mAdvancedDigitizingDockWidget->setAngle(
+            "90", QgsAdvancedDigitizingDockWidget::WidgetSetMode::FocusOut);
+        qDebug() << "A key pressed";
+    } else if (event->key() == Qt::Key_B) {
+        qDebug() << "B key pressed";
+        QgsSettings().setValue(QStringLiteral("/Cad/CommonAngle"), 90.0);
+    } else if (event->key() == Qt::Key_N) {
+        qDebug() << "N key pressed";
+        QgsSettings().setValue(QStringLiteral("/Cad/CommonAngle"), 0.0);
+    }
+
+    // 调用基类的 keyPressEvent 以确保正確處理其他事件
+    QMainWindow::keyPressEvent(event);
 }

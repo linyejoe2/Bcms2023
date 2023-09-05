@@ -70,6 +70,7 @@ class QgsFeatureAction : public QAction {
      * \since QGIS 3.8
      */
     void addFeatureFinished();
+    void addAreaFinished(const QgsFeature &feature);
 
    private slots:
     void onFeatureSaved(const QgsFeature &feature);
