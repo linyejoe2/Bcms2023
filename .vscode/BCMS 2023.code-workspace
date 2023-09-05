@@ -104,7 +104,8 @@
 			"qnetworkaccessmanager": "cpp",
 			"qjsondocument": "cpp",
 			"qobject": "cpp",
-			"qstandarditemmodel": "cpp"
+			"qstandarditemmodel": "cpp",
+			"qmimedata": "cpp"
 		},
 		"editor.quickSuggestions": {
 			"comments": true,

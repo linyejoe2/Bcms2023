@@ -260,18 +260,15 @@ void BcmsApp::loadLand(const ILandCode &landCode) {
         // 清理
         resetMap();
 
-        // 載入地圖
-        initLandDefine(filename);
-
         // 載入建築物套繪資料
         loadBuilding(landCode);
 
-        // 把排在陣列最後的地籍挪到最前面
-        mMapCanvasLayers.swapItemsAt(0, mMapCanvasLayers.length() - 1);
+        // 載入地圖
+        initLandDefine(filename);
 
-        // 定位到該去的地號
-        // setLocate(landCode);
-        emit landLoaded(landCode);
+        // 異步發送地段載入訊號，用於定位到地號
+        QTimer::singleShot(100, this,
+                           [this, landCode]() { emit landLoaded(landCode); });
 
         // 最後修改程式名稱為加上地區地段
         this->setWindowTitle("BcmsApp " + landCode.zonDesc + "-" +
