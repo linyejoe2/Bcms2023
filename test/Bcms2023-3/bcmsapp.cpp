@@ -192,6 +192,7 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     connect(ui->actionDelete_Selected, &QAction::triggered, this,
             [=] { deleteSelected(nullptr, nullptr, true); });
     connect(mBcmsLoadForm, &BcmsLoadForm::loadSignal, this, &BcmsApp::loadLand);
+    connect(this, &BcmsApp::landLoaded, this, &BcmsApp::setLocate);
     connect(mLayerTreeView, SIGNAL(currentLayerChanged(QgsMapLayer *)), this,
             SLOT(updateToolBarState(QgsMapLayer *)));
     connect(mMapCanvas, SIGNAL(keyPressed(QKeyEvent *)), this,
@@ -265,12 +266,12 @@ void BcmsApp::loadLand(const ILandCode &landCode) {
         // 載入建築物套繪資料
         loadBuilding(landCode);
 
+        // 把排在陣列最後的地籍挪到最前面
+        mMapCanvasLayers.swapItemsAt(0, mMapCanvasLayers.length() - 1);
+
         // 定位到該去的地號
-        // mMapCanvasLayers.swapItemsAt(
-        //     0,
-        //     mMapCanvasLayers.length() - 1);  //@
-        //     把排在陣列最後的地籍挪到最前面
-        setLocate(landCode);
+        // setLocate(landCode);
+        emit landLoaded(landCode);
 
         // 最後修改程式名稱為加上地區地段
         this->setWindowTitle("BcmsApp " + landCode.zonDesc + "-" +
@@ -319,6 +320,9 @@ void BcmsApp::loadBuilding(const ILandCode &landCode) {
     // addVectorLayers(filename, QStringLiteral("其他"), OTHER);
 }
 void BcmsApp::setLocate(const ILandCode &landCode) {
+#ifdef DEVELOPING
+    qDebug() << "in setLocate";
+#endif
     auto landLayer = findLayerByName(QStringLiteral("地籍"));
 
     // 构建查询表达式
@@ -349,10 +353,13 @@ void BcmsApp::setLocate(const ILandCode &landCode) {
         mMapCanvas->setVisible(true);
         mMapCanvas->freeze(false);
         mMapCanvas->refresh();
-    } else
-        qDebug() << QStringLiteral("地圖載入失敗!!!: ");
+    } else {
+        qDebug() << QStringLiteral("定位失敗!!!: ");
+        mMessageBar->pushMessage(QStringLiteral("定位失敗!!!"), tr(""),
+                                 Qgis::MessageLevel::Warning);
+    }
 
-    mMessageBar->pushMessage(QStringLiteral("成功載入地圖！"), tr(""),
+    mMessageBar->pushMessage(QStringLiteral("成功定位！"), tr(""),
                              Qgis::MessageLevel::Info);
 #ifdef DEVELOPING
     qDebug() << "done setLocate";
@@ -376,10 +383,18 @@ QgsVectorLayer *BcmsApp::findLayerByName(const QString &name) {
 
 void BcmsApp::resetMap() {
     try {
+        disconnect(mLayerTreeView, SIGNAL(currentLayerChanged(QgsMapLayer *)),
+                   this, SLOT(updateToolBarState(QgsMapLayer *)));
+        disconnect(mMapCanvas, SIGNAL(keyPressed(QKeyEvent *)), this,
+                   SLOT(keyPressEvent(QKeyEvent *)));
         // QgsProject::instance()->removeAllMapLayers();
         QgsProject::instance()->clear();
         mMapCanvasLayers.clear();
         mMapCanvas->setTheme("");
+        connect(mLayerTreeView, SIGNAL(currentLayerChanged(QgsMapLayer *)),
+                this, SLOT(updateToolBarState(QgsMapLayer *)));
+        connect(mMapCanvas, SIGNAL(keyPressed(QKeyEvent *)), this,
+                SLOT(keyPressEvent(QKeyEvent *)));
     } catch (const std::exception &e) {
         qWarning() << e.what();
     }
@@ -398,33 +413,13 @@ void BcmsApp::openMBcmsLoadForm() { mBcmsLoadForm->show(); }
 
 void BcmsApp::testFunc() {
     try {
-        auto landLayer = findLayerByName(QStringLiteral("地籍"));
+        auto testLand = new ILandCode();
+        testLand->zon = "400";
+        testLand->section = "0022";
+        testLand->landmon = "0001";
+        testLand->landchild = "0000";
 
-        QgsFeatureRequest request;
-        request.setFilterExpression(
-            QString("\"landmon\" = '0001' AND \"landchild\" = '0000'"));
-
-        QgsFeatureIterator it = landLayer->getFeatures(request);
-        if (it.isValid()) {
-            // 抓出第一個符合的要素
-            QgsFeature feat;
-            it.nextFeature(feat);
-
-            // 获取要素的几何信息
-            QgsGeometry geometry = feat.geometry();
-            QgsRectangle boundingBox = geometry.boundingBox();
-            qDebug() << "boundingBox: " << boundingBox.toString();
-            boundingBox.scale(8);
-
-            // 定位到要素的几何范围
-            const QgsRectangle largeExtent(-610861, 5101721, 2523921, 6795055);
-            mMapCanvas->setExtent(boundingBox);
-        } else
-            qDebug() << QStringLiteral("地圖載入失敗!!!: ");
-
-        mMapCanvas->refresh();
-        messageBar()->pushMessage(tr("Successful"),
-                                  Qgis::MessageLevel::Success);
+        emit landLoaded(*testLand);
     } catch (const std::exception &e) {
         qDebug() << "in testFunc catch!";
         qWarning() << e.what();

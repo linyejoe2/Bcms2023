@@ -106,6 +106,8 @@ class BcmsApp : public QMainWindow {
 
     //! 鍵盤事件
     void keyPressEvent(QKeyEvent *event) override;
+    //! 定位到某個地號
+    void setLocate(const ILandCode &landCode);
 
    private:
     Ui::BcmsApp *ui;
@@ -150,8 +152,6 @@ class BcmsApp : public QMainWindow {
     void loadLand(const ILandCode &landCode);
     //! 載入某段的套繪資料
     void loadBuilding(const ILandCode &landCode);
-    //! 定位到某個地號
-    void setLocate(const ILandCode &landCode);
 
     //! 清理地圖
     void resetMap();
@@ -172,5 +172,8 @@ class BcmsApp : public QMainWindow {
     //    protected:
     //     //! 鍵盤事件
     //     void keyPressEvent(QKeyEvent *event) override;
+   signals:
+
+    void landLoaded(const ILandCode &landCode);
 };
 #endif  // BCMSAPP_H

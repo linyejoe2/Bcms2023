@@ -103,7 +103,8 @@
 			"qmenu": "cpp",
 			"qnetworkaccessmanager": "cpp",
 			"qjsondocument": "cpp",
-			"qobject": "cpp"
+			"qobject": "cpp",
+			"qstandarditemmodel": "cpp"
 		},
 		"editor.quickSuggestions": {
 			"comments": true,
