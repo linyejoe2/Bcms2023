@@ -97,12 +97,12 @@ void BcmsLoadForm::loadLandData() {
     // 创建数据模型
     // QStandardItemModel *model = new QStandardItemModel(this);
 
-    // 设置表头
+    // 設置表頭
     model->setHorizontalHeaderLabels(
         {QStringLiteral("地區"), QStringLiteral("地段"), QStringLiteral("母號"),
          QStringLiteral("子號")});
 
-    // 从QJsonArray中提取数据并添加到数据模型中
+    // 取值，賦值
     foreach (const QJsonValue &value, jsonArray) {
         QJsonObject obj = value.toObject();
         QString zon = obj.value("zon").toString() + "-" +

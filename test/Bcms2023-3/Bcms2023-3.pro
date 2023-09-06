@@ -44,6 +44,7 @@ HEADERS += \
     core/bcmsfeaturedef.h \
     core/const.hpp \
     core/qgsguivectorlayertools.h \
+    helper/utility.h \
     services/geoviewer.h
 
 FORMS += \

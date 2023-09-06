@@ -105,6 +105,12 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     mMessageBar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     centralLayout->addWidget(mMessageBar, 0, 0, 1, 1);
 
+    //! 初始化變更列表
+    // mAreaTableView = new QTableView(this);
+    ui->areasDock->setWindowTitle(QStringLiteral("未存檔變更"));
+    // mLayerTreeView->setMessageBar(mMessageBar);
+    // ui->areasDock->setWidget(mAreaTableView);
+
     //! 初始化圖層管理器
     mLayerTreeView = new QgsLayerTreeView(this);
     ui->layersDock->setWindowTitle(QStringLiteral("圖層管理器"));
@@ -171,6 +177,12 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     // layout->addWidget(mSnappingDialog);
     // layout->setContentsMargins(0, 0, 0, 0);
     // mSnappingDialogContainer = dialog;
+    // ui->tableView->setFixedWidth(300);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(
+        QHeaderView::Stretch);
+    mAreaListItemModel->setHorizontalHeaderLabels(
+        {QStringLiteral("法定空地編號"), QStringLiteral("字串")});
+    ui->tableView->setModel(mAreaListItemModel);
 
     //! 載入圖層
     initLayerDefine("./temp/400_0044_polygon.json");
@@ -657,7 +669,6 @@ void BcmsApp::addFeature2() {
 
 void BcmsApp::onAreaAdd(QgsFeatureId fid) {
     auto areaLayer = findLayerByName(QStringLiteral("法定空地"));
-    auto areaFeature = areaLayer->getFeature(fid);
     disconnect(areaLayer, SIGNAL(featureAdded(QgsFeatureId)), this,
                SLOT(onAreaAdd(QgsFeatureId)));
 
@@ -674,14 +685,15 @@ void BcmsApp::onAreaAdd(QgsFeatureId fid) {
     int ret = msgBox.exec();
 
     // 根據使用者的選擇執行不同的操作
-    if (ret == QMessageBox::Abort) {
+    if (ret == QMessageBox::Cancel) {
         areaLayer->deleteFeature(fid);
         areaLayer->commitChanges();
-        mMessageBar->pushMessage(QStringLiteral("取消新增建築物！"), tr(""),
-                                 Qgis::MessageLevel::Info);
         updateToolBarState(areaLayer);
         mMapCanvas->setMapTool(
             mMapTools->mapTool(QgsAppMapTools::SelectFeatures));
+        ui->actionAdd_Feature_2->setChecked(false);
+        mMessageBar->pushMessage(QStringLiteral("取消新增建築物！"), tr(""),
+                                 Qgis::MessageLevel::Info);
         return;
     }
     qDebug() << "add Area!";
@@ -689,6 +701,21 @@ void BcmsApp::onAreaAdd(QgsFeatureId fid) {
     mMessageBar->pushMessage(
         QStringLiteral("法定空地範圍新增成功，請繪製其他圖層"), tr(""),
         Qgis::MessageLevel::Info);
+
+    // 取得新增的法定空地並寫入到未存檔變更中
+    auto areaFeature = areaLayer->getFeature(fid);
+    auto areaObject = new IAreaObject;
+    areaObject->area = areaFeature;
+    mAreaList.append(areaObject);
+
+    auto m = mAreaListItemModel;
+    QList<QStandardItem *> r;
+    r.append(new QStandardItem(areaObject->areaKey));
+    r.append(new QStandardItem(areaObject->area.geometry().asJson()));
+    m->appendRow(r);
+    ui->tableView->setModel(m);
+
+    // 同意修改
     areaLayer->commitChanges();
 
     // 開始繪製其他圖層

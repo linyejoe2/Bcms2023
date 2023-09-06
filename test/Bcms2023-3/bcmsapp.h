@@ -32,6 +32,11 @@ class BcmsApp;
 }
 QT_END_NAMESPACE
 
+struct IAreaObject {
+    QString areaKey = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    QgsFeature area;
+};
+
 class BcmsApp : public QMainWindow {
     Q_OBJECT
 
@@ -53,6 +58,8 @@ class BcmsApp : public QMainWindow {
     //     RA,
     //     OTHER  // 無法辨識或是未定義的，都會被放到此類
     // };
+
+    QList<IAreaObject *> mAreaList;
 
     //! 傳出畫布
     QgsMapCanvas *mapCanvas() { return mMapCanvas; }
@@ -115,6 +122,9 @@ class BcmsApp : public QMainWindow {
 
    private:
     Ui::BcmsApp *ui;
+
+    //! 新增及修改建築物列表
+    QStandardItemModel *mAreaListItemModel = new QStandardItemModel(this);
 
     //! 畫布
     QgsMapCanvas *mMapCanvas;
