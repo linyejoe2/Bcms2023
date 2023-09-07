@@ -706,6 +706,8 @@ void BcmsApp::onAreaAdd(QgsFeatureId fid) {
     auto areaFeature = areaLayer->getFeature(fid);
     auto areaObject = new IAreaObject;
     areaObject->area = areaFeature;
+    areaFeature.setAttribute(tr("area_key"), areaObject->areaKey);
+    areaLayer->updateFeature(areaFeature);
     mAreaList.append(areaObject);
 
     auto m = mAreaListItemModel;

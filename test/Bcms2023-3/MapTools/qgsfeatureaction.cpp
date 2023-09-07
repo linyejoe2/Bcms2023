@@ -173,6 +173,8 @@ bool QgsFeatureAction::addFeature(const QgsAttributeMap &defaultAttributes,
     //! 設定圖層類別
     if (mLayer->name() == QStringLiteral("法定空地")) {
         mFeature->setAttribute(tr("layer"), tr("BA"));
+        mFeature->setAttribute(
+            tr("area_key"), QUuid::createUuid().toString(QUuid::WithoutBraces));
     } else if (mLayer->name() == QStringLiteral("建築物")) {
         mFeature->setAttribute(tr("layer"), tr("BU"));
 
