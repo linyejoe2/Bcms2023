@@ -144,7 +144,7 @@ void QgsGuiVectorLayerTools::commitError(QgsVectorLayer *vlayer) const {
     act->setData(QVariant::fromValue(vlayer));
     act->setText(tr("Show more"));
     showMore->setStyleSheet(
-        QStringLiteral("background-color: rgba(255, 255, 255, 0); color: "
+        tr("background-color: rgba(255, 255, 255, 0); color: "
                        "black; text-decoration: underline;"));
     showMore->setCursor(Qt::PointingHandCursor);
     showMore->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);

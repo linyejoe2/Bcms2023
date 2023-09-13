@@ -27,6 +27,8 @@ class BcmsFeaturedef : public QObject {
     QJsonObject getSymbolConfig(const QString& fname);
 
     QString getSymbolDesc(const QString& fname);
+    QString getSymbolGeometryType(const QString& fname);
+    QString getSymbolByDesc(const QString& fdesc);
 
     QString getSymbolZIndex(const QString& fname);
 

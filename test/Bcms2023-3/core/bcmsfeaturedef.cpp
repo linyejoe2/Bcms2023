@@ -12,8 +12,7 @@
 #include "../services/geoviewer.h"
 
 //! 改寫 QJsonArray swap 方法
-inline void swap(QJsonValueRef val1, QJsonValueRef val2)
-{
+inline void swap(QJsonValueRef val1, QJsonValueRef val2) {
     QJsonValue temp(val1);
     val1 = QJsonValue(val2);
     val2 = temp;
@@ -110,6 +109,19 @@ QString BcmsFeaturedef::getSymbolDesc(const QString& fname) {
             auto obj = value.toObject();
             if (obj.contains("fname") && obj.value("fname") == fname) {
                 return obj.value("fdesc").toString();
+            }
+        }
+    }
+}
+
+QString BcmsFeaturedef::getSymbolByDesc(const QString& fdesc) {
+    auto tempArr = __object.array();
+
+    foreach (const QJsonValue& value, tempArr) {
+        if (value.isObject()) {
+            auto obj = value.toObject();
+            if (obj.contains("fdesc") && obj.value("fdesc") == fdesc) {
+                return obj.value("fname").toString();
             }
         }
     }

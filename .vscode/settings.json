@@ -35,8 +35,8 @@
   ],
   "C_Cpp_Runner.enableWarnings": true,
   "C_Cpp_Runner.warningsAsError": false,
-  "C_Cpp_Runner.compilerArgs": [],
-  "C_Cpp_Runner.linkerArgs": [],
+  "C_Cpp_Runner.compilerArgs": [ ],
+  "C_Cpp_Runner.linkerArgs": [ ],
   "C_Cpp_Runner.includePaths": [
     "${workspaceFolder}/test/**",
     "C:/Qt/5.12.12/msvc2017_64/bin",
@@ -68,5 +68,11 @@
   "C_Cpp_Runner.useUndefinedSanitizer": false,
   "C_Cpp_Runner.useLeakSanitizer": false,
   "C_Cpp_Runner.showCompilationTime": false,
-  "C_Cpp_Runner.useLinkTimeOptimization": false
+  "C_Cpp_Runner.useLinkTimeOptimization": false,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/test/Bcms2023-2": true
+  }
 }

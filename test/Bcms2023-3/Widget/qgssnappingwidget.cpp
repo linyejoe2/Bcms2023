@@ -59,12 +59,12 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   if ( tb )
   {
     mDisplayMode = ToolBar;
-    setObjectName( QStringLiteral( "SnappingOptionToolBar" ) );
+    setObjectName( tr( "SnappingOptionToolBar" ) );
   }
   else
   {
     mDisplayMode = Widget;
-    setObjectName( QStringLiteral( "SnappingOptionDialog" ) );
+    setObjectName( tr( "SnappingOptionDialog" ) );
   }
 
   // Advanced config layer tree view
@@ -120,7 +120,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   mEnabledAction->setIcon( QIcon( QgsApplication::getThemeIcon( "/mIconSnapping.svg" ) ) );
   mEnabledAction->setToolTip( tr( "Enable Snapping (S)" ) );
   mEnabledAction->setShortcut( tr( "S", "Keyboard shortcut: toggle snapping" ) );
-  mEnabledAction->setObjectName( QStringLiteral( "EnableSnappingAction" ) );
+  mEnabledAction->setObjectName( tr( "EnableSnappingAction" ) );
   connect( mEnabledAction, &QAction::toggled, this, &QgsSnappingWidget::enableSnapping );
 
   // avoid intersection mode button
@@ -136,7 +136,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   avoidIntersectionsModeMenu->addAction( mAvoidIntersectionsCurrentLayerAction );
   avoidIntersectionsModeMenu->addAction( mAvoidIntersectionsLayersAction );
   mAvoidIntersectionsModeButton->setMenu( avoidIntersectionsModeMenu );
-  mAvoidIntersectionsModeButton->setObjectName( QStringLiteral( "AvoidIntersectionsModeButton" ) );
+  mAvoidIntersectionsModeButton->setObjectName( tr( "AvoidIntersectionsModeButton" ) );
   if ( mDisplayMode == Widget )
   {
     mAvoidIntersectionsModeButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
@@ -162,7 +162,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
     modeMenu->addAction( openDialogAction );
   }
   mModeButton->setMenu( modeMenu );
-  mModeButton->setObjectName( QStringLiteral( "SnappingModeButton" ) );
+  mModeButton->setObjectName( tr( "SnappingModeButton" ) );
   if ( mDisplayMode == Widget )
   {
     mModeButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
@@ -188,7 +188,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   }
 
   mTypeButton->setMenu( typeMenu );
-  mTypeButton->setObjectName( QStringLiteral( "SnappingTypeButton" ) );
+  mTypeButton->setObjectName( tr( "SnappingTypeButton" ) );
   if ( mDisplayMode == Widget )
   {
     mTypeButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
@@ -200,7 +200,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   mToleranceSpinBox->setDecimals( 5 );
   mToleranceSpinBox->setMaximum( 99999999.990000 );
   mToleranceSpinBox->setToolTip( tr( "Snapping Tolerance in Defined Units" ) );
-  mToleranceSpinBox->setObjectName( QStringLiteral( "SnappingToleranceSpinBox" ) );
+  mToleranceSpinBox->setObjectName( tr( "SnappingToleranceSpinBox" ) );
   connect( mToleranceSpinBox, qOverload< double >( &QgsDoubleSpinBox::valueChanged ), this, &QgsSnappingWidget::changeTolerance );
 
   // units
@@ -210,7 +210,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   const QString mapCanvasDistanceUnits { QgsUnitTypes::toString( mCanvas->mapSettings().mapUnits() ) };
   mUnitsComboBox->addItem( mapCanvasDistanceUnits, QgsTolerance::ProjectUnits );
   mUnitsComboBox->setToolTip( tr( "Snapping Unit Type: Pixels (px) or Project/Map Units (%1)" ).arg( mapCanvasDistanceUnits ) );
-  mUnitsComboBox->setObjectName( QStringLiteral( "SnappingUnitComboBox" ) );
+  mUnitsComboBox->setObjectName( tr( "SnappingUnitComboBox" ) );
   connect( mUnitsComboBox, qOverload<int>( &QComboBox::currentIndexChanged ),
            this, &QgsSnappingWidget::changeUnit );
 
@@ -228,7 +228,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   mTopologicalEditingAction->setCheckable( true );
   mTopologicalEditingAction->setIcon( QIcon( QgsApplication::getThemeIcon( "/mIconTopologicalEditing.svg" ) ) );
   mTopologicalEditingAction->setToolTip( tr( "Enable Topological Editing" ) );
-  mTopologicalEditingAction->setObjectName( QStringLiteral( "TopologicalEditingAction" ) );
+  mTopologicalEditingAction->setObjectName( tr( "TopologicalEditingAction" ) );
   connect( mTopologicalEditingAction, &QAction::toggled, this, &QgsSnappingWidget::enableTopologicalEditing );
 
   // snapping on intersection button
@@ -236,7 +236,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   mIntersectionSnappingAction->setCheckable( true );
   mIntersectionSnappingAction->setIcon( QIcon( QgsApplication::getThemeIcon( "/mIconSnappingIntersection.svg" ) ) );
   mIntersectionSnappingAction->setToolTip( tr( "Enable Snapping on Intersection" ) );
-  mIntersectionSnappingAction->setObjectName( QStringLiteral( "IntersectionSnappingAction" ) );
+  mIntersectionSnappingAction->setObjectName( tr( "IntersectionSnappingAction" ) );
   connect( mIntersectionSnappingAction, &QAction::toggled, this, &QgsSnappingWidget::enableIntersectionSnapping );
 
   // snapping on intersection button
@@ -245,7 +245,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   mEnableTracingAction->setIcon( QIcon( QgsApplication::getThemeIcon( "/mActionTracing.svg" ) ) );
   mEnableTracingAction->setToolTip( tr( "Enable Tracing (T)" ) );
   mEnableTracingAction->setShortcut( tr( "T", "Keyboard shortcut: Enable tracing" ) );
-  mEnableTracingAction->setObjectName( QStringLiteral( "EnableTracingAction" ) );
+  mEnableTracingAction->setObjectName( tr( "EnableTracingAction" ) );
 
   // tracing offset
   mTracingOffsetSpinBox = new QgsDoubleSpinBox;
@@ -272,7 +272,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   mSelfSnappingAction->setCheckable( true );
   mSelfSnappingAction->setIcon( QIcon( QgsApplication::getThemeIcon( "/mIconSnappingSelf.svg" ) ) );
   mSelfSnappingAction->setToolTip( tr( "If self snapping is enabled, snapping will also take the current state of the digitized feature into consideration." ) );
-  mSelfSnappingAction->setObjectName( QStringLiteral( "SelfSnappingAction" ) );
+  mSelfSnappingAction->setObjectName( tr( "SelfSnappingAction" ) );
   connect( mSelfSnappingAction, &QAction::toggled, this, &QgsSnappingWidget::enableSelfSnapping );
 
   // layout
@@ -291,7 +291,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
     advConfigMenu->addAction( advConfigWidgetAction );
     advConfigButton->setIcon( QIcon( QgsApplication::getThemeIcon( "/mActionShowAllLayers.svg" ) ) );
     advConfigButton->setToolTip( tr( "Edit advanced configuration" ) );
-    advConfigButton->setObjectName( QStringLiteral( "EditAdvancedConfigurationButton" ) );
+    advConfigButton->setObjectName( tr( "EditAdvancedConfigurationButton" ) );
     advConfigButton->setMenu( advConfigMenu );
     mEditAdvancedConfigAction = tb->addWidget( advConfigButton );
 
@@ -310,12 +310,12 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
   {
     mMinScaleWidget = new QgsScaleWidget();
     mMinScaleWidget->setToolTip( tr( "Minimum scale from which snapping is enabled (i.e. most \"zoomed out\" scale)" ) );
-    mMinScaleWidget->setObjectName( QStringLiteral( "SnappingMinScaleSpinBox" ) );
+    mMinScaleWidget->setObjectName( tr( "SnappingMinScaleSpinBox" ) );
     connect( mMinScaleWidget, &QgsScaleWidget::scaleChanged, this, &QgsSnappingWidget::changeMinScale );
 
     mMaxScaleWidget = new QgsScaleWidget();
     mMaxScaleWidget->setToolTip( tr( "Maximum scale up to which snapping is enabled (i.e. most \"zoomed in\" scale)" ) );
-    mMaxScaleWidget->setObjectName( QStringLiteral( "SnappingMaxScaleSpinBox" ) );
+    mMaxScaleWidget->setObjectName( tr( "SnappingMaxScaleSpinBox" ) );
     connect( mMaxScaleWidget, &QgsScaleWidget::scaleChanged, this, &QgsSnappingWidget::changeMaxScale );
 
     mSnappingScaleModeButton = new QToolButton();
@@ -332,7 +332,7 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
     scaleModeMenu->addAction( mGlobalSnappingScaleAct );
     scaleModeMenu->addAction( mPerLayerSnappingScaleAct );
     mSnappingScaleModeButton->setMenu( scaleModeMenu );
-    mSnappingScaleModeButton->setObjectName( QStringLiteral( "SnappingScaleModeButton" ) );
+    mSnappingScaleModeButton->setObjectName( tr( "SnappingScaleModeButton" ) );
     mSnappingScaleModeButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
     connect( mSnappingScaleModeButton, &QToolButton::triggered, this, &QgsSnappingWidget::snappingScaleModeTriggered );
 
@@ -400,14 +400,14 @@ QgsSnappingWidget::QgsSnappingWidget( QgsProject *project, QgsMapCanvas *canvas,
 
   enableSnapping( QgsSettingsRegistryCore::settingsDigitizingDefaultSnapEnabled.value() );
 
-  restoreGeometry( QgsSettings().value( QStringLiteral( "/Windows/SnappingWidget/geometry" ) ).toByteArray() );
+  restoreGeometry( QgsSettings().value( tr( "/Windows/SnappingWidget/geometry" ) ).toByteArray() );
 }
 
 QgsSnappingWidget::~QgsSnappingWidget()
 {
   if ( mDisplayMode == Widget )
   {
-    QgsSettings().setValue( QStringLiteral( "/Windows/SnappingWidget/geometry" ), saveGeometry() );
+    QgsSettings().setValue( tr( "/Windows/SnappingWidget/geometry" ), saveGeometry() );
   }
 }
 

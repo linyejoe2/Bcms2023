@@ -198,7 +198,7 @@ bool transformSelectGeometry(const QgsGeometry &selectGeometry,
         Q_UNUSED(cse)
         // catch exception for 'invalid' point and leave existing selection
         // unchanged
-        QgsDebugMsg(QStringLiteral("Caught CRS exception "));
+        QgsDebugMsg(tr("Caught CRS exception "));
         BcmsApp::instance()->messageBar()->pushMessage(
             QObject::tr("CRS Exception"),
             QObject::tr("Selection extends beyond layer's coordinate system"),
@@ -379,8 +379,8 @@ QgsFeatureIds QgsMapToolSelectUtils::getMatchingFeatures(
 
     QgsDebugMsgLevel("Selection layer: " + vlayer->name(), 3);
     QgsDebugMsgLevel("Selection polygon: " + selectGeomTrans.asWkt(), 3);
-    QgsDebugMsgLevel("doContains: " + QString(doContains ? QStringLiteral("T")
-                                                         : QStringLiteral("F")),
+    QgsDebugMsgLevel("doContains: " + QString(doContains ? tr("T")
+                                                         : tr("F")),
                      3);
 
     // make sure the selection geometry is valid, or intersection tests won't
@@ -855,19 +855,19 @@ void QgsMapToolSelectUtils::QgsMapToolSelectMenuActions::styleHighlight(
     QgsHighlight *highlight) {
     QgsSettings settings;
     QColor color = QColor(settings
-                              .value(QStringLiteral("Map/highlight/color"),
+                              .value(tr("Map/highlight/color"),
                                      Qgis::DEFAULT_HIGHLIGHT_COLOR.name())
                               .toString());
     int alpha = settings
-                    .value(QStringLiteral("Map/highlight/colorAlpha"),
+                    .value(tr("Map/highlight/colorAlpha"),
                            Qgis::DEFAULT_HIGHLIGHT_COLOR.alpha())
                     .toInt();
     double buffer = settings
-                        .value(QStringLiteral("Map/highlight/buffer"),
+                        .value(tr("Map/highlight/buffer"),
                                Qgis::DEFAULT_HIGHLIGHT_BUFFER_MM)
                         .toDouble();
     double minWidth = settings
-                          .value(QStringLiteral("Map/highlight/minWidth"),
+                          .value(tr("Map/highlight/minWidth"),
                                  Qgis::DEFAULT_HIGHLIGHT_MIN_WIDTH_MM)
                           .toDouble();
 

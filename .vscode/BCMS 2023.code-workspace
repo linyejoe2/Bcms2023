@@ -105,7 +105,9 @@
 			"qjsondocument": "cpp",
 			"qobject": "cpp",
 			"qstandarditemmodel": "cpp",
-			"qmimedata": "cpp"
+			"qmimedata": "cpp",
+			"quuid": "cpp",
+			"qnetworkrequest": "cpp"
 		},
 		"editor.quickSuggestions": {
 			"comments": true,

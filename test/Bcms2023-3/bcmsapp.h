@@ -176,6 +176,9 @@ class BcmsApp : public QMainWindow {
     //! 檢查 GeoJSON 文件
     bool checkGeoJSON(const QString &filePath);
 
+    //! 覆寫 commit 修正圖層存檔時 geometry type 不對的問題
+    void commitWithFixGeometryType(QgsVectorLayer &l);
+
     // TODO
     // //! 設定圖層表現方式
     // void setLayerSymbol(QgsVectorLayer layer, )

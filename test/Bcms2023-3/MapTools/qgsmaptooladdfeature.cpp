@@ -113,7 +113,7 @@ void QgsMapToolAddFeature::featureDigitized(const QgsFeature &feature) {
                             topologicalPoint);
                     } catch (QgsCsException &cse) {
                         Q_UNUSED(cse)
-                        QgsDebugMsg(QStringLiteral(
+                        QgsDebugMsg(tr(
                             "transformation to layer coordinate failed"));
                     }
                 } else {

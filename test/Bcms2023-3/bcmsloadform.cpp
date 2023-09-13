@@ -15,7 +15,7 @@ BcmsLoadForm::BcmsLoadForm(QWidget *parent)
     : QDockWidget(parent), ui(new Ui::BcmsLoadForm) {
     ui->setupUi(this);
 
-    this->setWindowTitle(QStringLiteral("地段載入器"));
+    this->setWindowTitle(tr("地段載入器"));
 
     fetchLandCodeFromAPI();
 
@@ -99,8 +99,8 @@ void BcmsLoadForm::loadLandData() {
 
     // 設置表頭
     model->setHorizontalHeaderLabels(
-        {QStringLiteral("地區"), QStringLiteral("地段"), QStringLiteral("母號"),
-         QStringLiteral("子號")});
+        {tr("地區"), tr("地段"), tr("母號"),
+         tr("子號")});
 
     // 取值，賦值
     foreach (const QJsonValue &value, jsonArray) {

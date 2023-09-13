@@ -19,6 +19,8 @@
 
 #include <QPushButton>
 
+#include "../core/bcmsarea.h"
+#include "../core/bcmsfeaturedef.h"
 #include "bcmsapp.h"
 
 typedef QHash<QgsVectorLayer *, QgsAttributeMap> CachedAttributesHash;
@@ -63,12 +65,10 @@ QgsAttributeDialog *QgsFeatureAction::newDialog(bool cloneFeature) {
         mLayer, f, cloneFeature, parentWidget(), true, context);
     dialog->setWindowFlags(dialog->windowFlags() | Qt::Tool);
 
-    dialog->setObjectName(QStringLiteral("featureactiondlg:%1:%2")
-                              .arg(mLayer->id())
-                              .arg(f->id()));
+    dialog->setObjectName(
+        tr("featureactiondlg:%1:%2").arg(mLayer->id()).arg(f->id()));
 
-    const QList<QgsAction> actions =
-        mLayer->actions()->actions(QStringLiteral("Feature"));
+    const QList<QgsAction> actions = mLayer->actions()->actions(tr("Feature"));
     if (!actions.isEmpty()) {
         dialog->setContextMenuPolicy(Qt::ActionsContextMenu);
 
@@ -101,9 +101,8 @@ QgsAttributeDialog *QgsFeatureAction::newDialog(bool cloneFeature) {
 bool QgsFeatureAction::viewFeatureForm(QgsHighlight *h) {
     if (!mLayer || !mFeature) return false;
 
-    const QString name(QStringLiteral("featureactiondlg:%1:%2")
-                           .arg(mLayer->id())
-                           .arg(mFeature->id()));
+    const QString name(
+        tr("featureactiondlg:%1:%2").arg(mLayer->id()).arg(mFeature->id()));
 
     QgsAttributeDialog *dialog =
         BcmsApp::instance()->findChild<QgsAttributeDialog *>(name);
@@ -131,8 +130,7 @@ bool QgsFeatureAction::addFeature(const QgsAttributeMap &defaultAttributes,
 
     const bool reuseAllLastValues =
         QgsSettingsRegistryCore::settingsDigitizingReuseLastValues.value();
-    QgsDebugMsgLevel(
-        QStringLiteral("reuseAllLastValues: %1").arg(reuseAllLastValues), 2);
+    QgsDebugMsgLevel(tr("reuseAllLastValues: %1").arg(reuseAllLastValues), 2);
 
     const QgsFields fields = mLayer->fields();
     QgsAttributeMap initialAttributeValues;
@@ -170,12 +168,17 @@ bool QgsFeatureAction::addFeature(const QgsAttributeMap &defaultAttributes,
         QgsSettingsRegistryCore::
             settingsDigitizingDisableEnterAttributeValuesDialog.value();
 
-    //! 設定圖層類別
-    if (mLayer->name() == QStringLiteral("法定空地")) {
+    //! 設定圖層
+    if (mLayer->name() == tr("法定空地")) {
+        //! 設定法空類別
         mFeature->setAttribute(tr("layer"), tr("BA"));
-        mFeature->setAttribute(
-            tr("area_key"), QUuid::createUuid().toString(QUuid::WithoutBraces));
-    } else if (mLayer->name() == QStringLiteral("建築物")) {
+
+        //! 新增法空物件
+        auto areaObject = new IAreaObject2();
+        areaObject->editing = true;
+        areaObject->area = *mFeature;
+        BcmsArea::instance().addArea(areaObject);
+    } else if (mLayer->name() == tr("建築物")) {
         mFeature->setAttribute(tr("layer"), tr("BU"));
 
         //! 開啟建號輸入畫面
@@ -187,9 +190,18 @@ bool QgsFeatureAction::addFeature(const QgsAttributeMap &defaultAttributes,
             // Set the attribute label value
             mFeature->setAttribute(tr("label"), attributeLabel);
         }
-    } else if (mLayer->name() == QStringLiteral("法定騎樓")) {
-        mFeature->setAttribute(tr("layer"), tr("AL"));
     }
+    // else if (mLayer->name() == tr("法定騎樓")) {
+    //     mFeature->setAttribute(tr("layer"), tr("AL"));
+    // }
+    else {
+        QString id = BcmsFeaturedef::instance().getSymbolByDesc(mLayer->name());
+        qDebug() << "id: " << id;
+        mFeature->setAttribute(tr("layer"), id);
+    }
+    //! 統一加上法定空地編號
+    mFeature->setAttribute(tr("area_key"),
+                           BcmsArea::instance().editingArea()->areaKey);
 
     mLayer->beginEditCommand(text());
     mFeatureSaved = mLayer->addFeature(*mFeature);
@@ -200,7 +212,7 @@ bool QgsFeatureAction::addFeature(const QgsAttributeMap &defaultAttributes,
     } else {
         mLayer->destroyEditCommand();
     }
-    if (mLayer->name() == QStringLiteral("法定空地")) {
+    if (mLayer->name() == tr("法定空地")) {
         emit addAreaFinished(*mFeature);
     }
     emit addFeatureFinished();
@@ -230,7 +242,7 @@ void QgsFeatureAction::onFeatureSaved(const QgsFeature &feature) {
         QgsAttributeMap origValues = (*sLastUsedValues())[mLayer];
         if (origValues[idx] != newValues.at(idx)) {
             QgsDebugMsgLevel(
-                QStringLiteral("Saving %1 for %2")
+                tr("Saving %1 for %2")
                     .arg((*sLastUsedValues())[mLayer][idx].toString())
                     .arg(idx),
                 2);
@@ -276,7 +288,7 @@ bool QgsFeatureAction::editFeature(bool showModal) {
     //     mFeature->setAttributes(dialog->feature()->attributes());
     //     return rv;
     // } else {
-    //     const QString name(QStringLiteral("featureactiondlg:%1:%2")
+    //     const QString name(tr("featureactiondlg:%1:%2")
     //                            .arg(mLayer->id())
     //                            .arg(mFeature->id()));
 
@@ -310,7 +322,7 @@ bool QgsFeatureAction::editFeature(bool showModal) {
 //     const bool reuseAllLastValues =
 //         QgsSettingsRegistryCore::settingsDigitizingReuseLastValues.value();
 //     QgsDebugMsgLevel(
-//         QStringLiteral("reuseAllLastValues: %1").arg(reuseAllLastValues), 2);
+//         tr("reuseAllLastValues: %1").arg(reuseAllLastValues), 2);
 
 //     const QgsFields fields = mLayer->fields();
 //     QgsAttributeMap initialAttributeValues;
