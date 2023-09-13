@@ -194,6 +194,8 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
             SLOT(toggleEditing()));
     connect(ui->actionAdd_Feature, SIGNAL(triggered()), this,
             SLOT(addFeature()));
+    connect(ui->actionEdit_Feature, SIGNAL(triggered()), this,
+            SLOT(editFeature()));
     connect(ui->actionAdd_Feature_2, SIGNAL(triggered()), this,
             SLOT(addFeature2()));
     connect(mLayerTreeView, SIGNAL(currentLayerChanged(QgsMapLayer *)), this,
@@ -229,7 +231,13 @@ void BcmsApp::updateToolBarState(QgsMapLayer *layer) {
         ui->actionToggle_Editing->setChecked(true);
         ui->actionToggle_Editing->setIcon(
             QIcon(":/img/bcms/action_icon/lock_open_right.svg"));
-        mMapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::AddFeature));
+        if (mMapCanvas->mapTool() !=
+                mMapTools->mapTool(QgsAppMapTools::VertexToolActiveLayer) &&
+            mMapCanvas->mapTool() !=
+                mMapTools->mapTool(QgsAppMapTools::AddFeature)) {
+            mMapCanvas->setMapTool(
+                mMapTools->mapTool(QgsAppMapTools::VertexToolActiveLayer));
+        }
     } else {
         ui->actionToggle_Editing->setChecked(false);
         ui->actionToggle_Editing->setIcon(
@@ -636,6 +644,11 @@ void BcmsApp::deleteSelected(QgsMapLayer *layer, QWidget *,
     }
 
     vlayer->endEditCommand();
+}
+
+void BcmsApp::editFeature() {
+    mMapCanvas->setMapTool(
+        mMapTools->mapTool(QgsAppMapTools::VertexToolActiveLayer));
 }
 
 void BcmsApp::addFeature() {

@@ -94,7 +94,9 @@ class BcmsApp : public QMainWindow {
     void commitAllLayers();
     //! 新增一個圖層
     void addFeature();
-    //! 新增一個圖層
+    //! 編輯一個圖層
+    void editFeature();
+    //! 新增一個建築物
     void addFeature2();
     //! 自動選擇圖層
     void autoSelectAddedLayer(QList<QgsMapLayer *> layers);

@@ -26,6 +26,9 @@ SOURCES += \
     MapTools/qgsmaptoolselect.cpp \
     MapTools/qgsmaptoolselectionhandler.cpp \
     MapTools/qgsmaptoolselectutils.cpp \
+    MapTools/vertextool/qgslockedfeature.cpp \
+    MapTools/vertextool/qgsvertexeditor.cpp \
+    MapTools/vertextool/qgsvertextool.cpp \
     Widget/qgssnappinglayertreemodel.cpp \
     Widget/qgssnappingwidget.cpp \
     bcmsloadform.cpp \
@@ -43,6 +46,9 @@ HEADERS += \
     MapTools/qgsmaptoolselect.h \
     MapTools/qgsmaptoolselectionhandler.h \
     MapTools/qgsmaptoolselectutils.h \
+    MapTools/vertextool/qgslockedfeature.h \
+    MapTools/vertextool/qgsvertexeditor.h \
+    MapTools/vertextool/qgsvertextool.h \
     Widget/qgssnappinglayertreemodel.h \
     Widget/qgssnappingwidget.h \
     bcmsapp.h \

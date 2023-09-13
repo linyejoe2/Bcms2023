@@ -7,6 +7,7 @@
 #include <qgssettingsregistrycore.h>
 
 #include "qgsmaptooladdfeature.h"
+#include "vertextool/qgsvertextool.h"
 #include "qgsmaptoolselect.h"
 
 QgsAppMapTools::QgsAppMapTools(QgsMapCanvas *canvas,
@@ -20,6 +21,9 @@ QgsAppMapTools::QgsAppMapTools(QgsMapCanvas *canvas,
     mTools.insert(Tool::AddFeature,
                   new QgsMapToolAddFeature(canvas, cadDock,
                                            QgsMapToolCapture::CaptureNone));
+    mTools.insert(
+        Tool::VertexToolActiveLayer,
+        new QgsVertexTool(canvas, cadDock, QgsVertexTool::ActiveLayer));
     mTools.insert(Tool::SelectFeatures, new QgsMapToolSelect(canvas));
     // mTools.insert(Tool::SelectPolygon, new QgsMapToolSelect(canvas));
     // mTools.insert(Tool::SelectFreehand, new QgsMapToolSelect(canvas));
