@@ -499,5 +499,20 @@
         <file>img/user.png</file>
         <file>img/user.svg</file>
         <file>img/zoomMaster.svg</file>
+        <file>img/bcms/bcms2009.ico</file>
+        <file>img/bcms/action_icon/add.svg</file>
+        <file>img/bcms/action_icon/add_box.svg</file>
+        <file>img/bcms/action_icon/add2.svg</file>
+        <file>img/bcms/action_icon/arrow_selector_tool.svg</file>
+        <file>img/bcms/action_icon/delete.svg</file>
+        <file>img/bcms/action_icon/edit.svg</file>
+        <file>img/bcms/action_icon/edit_square.svg</file>
+        <file>img/bcms/action_icon/lock.svg</file>
+        <file>img/bcms/action_icon/lock_open.svg</file>
+        <file>img/bcms/action_icon/lock_open_right.svg</file>
+        <file>img/bcms/action_icon/remove_selection.svg</file>
+        <file>img/bcms/action_icon/select.svg</file>
+        <file>img/bcms/action_icon/test.svg</file>
+        <file>img/bcms/action_icon/travel_explore.svg</file>
     </qresource>
 </RCC>

@@ -227,9 +227,13 @@ void BcmsApp::updateToolBarState(QgsMapLayer *layer) {
     // 更新編輯按鈕狀態
     if (layer->isEditable()) {
         ui->actionToggle_Editing->setChecked(true);
+        ui->actionToggle_Editing->setIcon(
+            QIcon(":/img/bcms/action_icon/lock_open_right.svg"));
         mMapCanvas->setMapTool(mMapTools->mapTool(QgsAppMapTools::AddFeature));
     } else {
         ui->actionToggle_Editing->setChecked(false);
+        ui->actionToggle_Editing->setIcon(
+            QIcon(":/img/bcms/action_icon/lock.svg"));
         mMapCanvas->setMapTool(
             mMapTools->mapTool(QgsAppMapTools::SelectFeatures));
     }
@@ -647,6 +651,14 @@ void BcmsApp::addFeature() {
 }
 
 void BcmsApp::addFeature2() {
+    // 如果被按起來，然後沒畫法空，就直接取消
+    if (!ui->actionAdd_Feature_2->isChecked() &&
+        !BcmsArea::instance().editingArea()) {
+        commitAllLayers();
+        mMessageBar->pushMessage(tr("取消新增建築物！"), tr(""),
+                                 Qgis::MessageLevel::Info);
+        return;
+    }
     // 如果被按起來，就走儲存那段
     if (!ui->actionAdd_Feature_2->isChecked()) {
         commitAllLayers();
@@ -747,8 +759,10 @@ void BcmsApp::toggleEditing() {
 
     if (ui->actionToggle_Editing->isChecked()) {
         selectedLayer->startEditing();
+        updateToolBarState(selectedLayer);
     } else {
         commitWithFixGeometryType(*selectedLayer);
+        updateToolBarState(selectedLayer);
         // bool s = selectedLayer->commitChanges();
         // if (!s) {
         //     qDebug() << "commitErrors: " << selectedLayer->commitErrors()[0];
@@ -794,9 +808,9 @@ void BcmsApp::editAllLayers() {
 void BcmsApp::commitAllLayers() {
     for (QgsMapLayer *layer : mMapCanvasLayers) {
         QgsVectorLayer *vectorLayer = dynamic_cast<QgsVectorLayer *>(layer);
-        if (vectorLayer && vectorLayer->name() == tr("法定空地")) {
-            continue;
-        }
+        // if (vectorLayer && vectorLayer->name() == tr("法定空地")) {
+        //     continue;
+        // }
         commitWithFixGeometryType(*vectorLayer);
         // bool s = vectorLayer->commitChanges();
     }

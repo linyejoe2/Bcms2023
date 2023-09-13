@@ -37,6 +37,7 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context,
     QFile file("./debug/" + currentDateTime + "_log");
     if (file.open(QIODevice::Append | QIODevice::Text)) {
         QTextStream textStream(&file);
+        textStream.setCodec("UTF-8");
         textStream << logText << "\n";
         file.close();
     }
@@ -49,6 +50,8 @@ int main(int argc, char *argv[]) {
     QApplication::setStyle("Fusion");
     QApplication a(argc, argv);
     BcmsApp w;
+    QIcon appIcon(":/img/bcms/bcms2009.ico");
+    w.setWindowIcon(appIcon);
 
     // qDebug() << "keys--" << QStyleFactory::keys();
     w.show();

@@ -1,6 +1,9 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 
+# Developer Add
+!./test/Bcms2023-3/img/bcms/*
+
 *~
 *.autosave
 *.a

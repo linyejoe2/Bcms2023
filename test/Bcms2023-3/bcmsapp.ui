@@ -54,6 +54,7 @@
    <addaction name="actionOpen_SectionForm"/>
    <addaction name="actionToggle_Editing"/>
    <addaction name="actionAdd_Feature"/>
+   <addaction name="actionEdit_Feature"/>
    <addaction name="actionSelect_Rectangle"/>
    <addaction name="actionDelete_Selected"/>
    <addaction name="actionAdd_Feature_2"/>
@@ -156,49 +157,55 @@
    </property>
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/img/mActionToggleEditing.png</normaloff>:/img/mActionToggleEditing.png</iconset>
+     <normaloff>:/img/bcms/action_icon/lock.svg</normaloff>:/img/bcms/action_icon/lock.svg</iconset>
    </property>
    <property name="text">
     <string>Toggle_Editing</string>
+   </property>
+   <property name="toolTip">
+    <string>解鎖選擇圖層</string>
    </property>
   </action>
   <action name="actionAdd_Feature">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/img/symbologyAdd.png</normaloff>:/img/symbologyAdd.png</iconset>
+     <normaloff>:/img/bcms/action_icon/add_box.svg</normaloff>:/img/bcms/action_icon/add_box.svg</iconset>
    </property>
    <property name="text">
     <string>Add_Feature</string>
+   </property>
+   <property name="toolTip">
+    <string>新增多邊形工具</string>
    </property>
   </action>
   <action name="actionSelect_Rectangle">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/img/mActionSelectRectangle.svg</normaloff>:/img/mActionSelectRectangle.svg</iconset>
+     <normaloff>:/img/bcms/action_icon/select.svg</normaloff>:/img/bcms/action_icon/select.svg</iconset>
    </property>
    <property name="text">
     <string>Select Rectangle</string>
    </property>
    <property name="toolTip">
-    <string>選擇圖層</string>
+    <string>選擇多邊形工具</string>
    </property>
   </action>
   <action name="actionDelete_Selected">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/img/mActionDeleteSelected.svg</normaloff>:/img/mActionDeleteSelected.svg</iconset>
+     <normaloff>:/img/bcms/action_icon/remove_selection.svg</normaloff>:/img/bcms/action_icon/remove_selection.svg</iconset>
    </property>
    <property name="text">
     <string>Delete Selected</string>
    </property>
    <property name="toolTip">
-    <string>刪除選擇圖層</string>
+    <string>刪除多邊形工具</string>
    </property>
   </action>
   <action name="actionOpen_SectionForm">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/img/mActionAddNonDbLayer.png</normaloff>:/img/mActionAddNonDbLayer.png</iconset>
+     <normaloff>:/img/bcms/action_icon/travel_explore.svg</normaloff>:/img/bcms/action_icon/travel_explore.svg</iconset>
    </property>
    <property name="text">
     <string>Open_SectionForm</string>
@@ -206,14 +213,20 @@
    <property name="toolTip">
     <string>開啟地段</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="actionTest1">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/img/favourites.png</normaloff>:/img/favourites.png</iconset>
+     <normaloff>:/img/bcms/action_icon/test.svg</normaloff>:/img/bcms/action_icon/test.svg</iconset>
    </property>
    <property name="text">
     <string>Test1</string>
+   </property>
+   <property name="toolTip">
+    <string>測試按鈕(Test1)</string>
    </property>
   </action>
   <action name="actionAdd_Feature_2">
@@ -222,13 +235,25 @@
    </property>
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/img/symbologyAdd.png</normaloff>:/img/symbologyAdd.png</iconset>
+     <normaloff>:/img/bcms/action_icon/add.svg</normaloff>:/img/bcms/action_icon/add.svg</iconset>
    </property>
    <property name="text">
     <string>Add_Feature_2</string>
    </property>
    <property name="toolTip">
     <string>新增新建物</string>
+   </property>
+  </action>
+  <action name="actionEdit_Feature">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/img/bcms/action_icon/edit_square.svg</normaloff>:/img/bcms/action_icon/edit_square.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Edit_Feature</string>
+   </property>
+   <property name="toolTip">
+    <string>編輯多邊形工具</string>
    </property>
   </action>
  </widget>
