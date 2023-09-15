@@ -6,6 +6,7 @@ BcmsArea::BcmsArea(QObject *parent) : QObject{parent} {
 }
 
 void BcmsArea::addArea(IAreaObject2 *areaObj) {
+    qDebug() << areaObj->filePath;
     mAreaList.append(areaObj);
     mEditingArea = areaObj;
     updateAreaListItemModel();

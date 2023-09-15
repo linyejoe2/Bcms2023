@@ -16,6 +16,7 @@
 #include <qgsvectorlayer.h>
 #include <qgsvectorlayerutils.h>
 #include <qinputdialog.h>
+#include <qregularexpression.h>
 
 #include <QPushButton>
 
@@ -177,6 +178,9 @@ bool QgsFeatureAction::addFeature(const QgsAttributeMap &defaultAttributes,
         auto areaObject = new IAreaObject2();
         areaObject->editing = true;
         areaObject->area = *mFeature;
+        QRegularExpression re("(^.*)\\|");
+        // QString match = re.match(mLayer->source()).captured(1);
+        areaObject->filePath = re.match(mLayer->source()).captured(1);
         BcmsArea::instance().addArea(areaObject);
     } else if (mLayer->name() == tr("建築物")) {
         mFeature->setAttribute(tr("layer"), tr("BU"));

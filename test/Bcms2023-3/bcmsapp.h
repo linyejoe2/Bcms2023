@@ -44,21 +44,6 @@ class BcmsApp : public QMainWindow {
     BcmsApp(QWidget *parent = nullptr);
     ~BcmsApp();
 
-    // //! 套繪系統的圖層
-    // enum LayerTypes {
-    //     LD,  // 地籍
-    //     SRL,
-    //     RE,
-    //     AL,  // 法定騎樓
-    //     IC,
-    //     BU,  // 建築物
-    //     FA,
-    //     NR,
-    //     BA,  // 法定空地
-    //     RA,
-    //     OTHER  // 無法辨識或是未定義的，都會被放到此類
-    // };
-
     QList<IAreaObject *> mAreaList;
 
     //! 傳出畫布
@@ -128,6 +113,10 @@ class BcmsApp : public QMainWindow {
     //! 新增及修改建築物列表
     QStandardItemModel *mAreaListItemModel = new QStandardItemModel(this);
 
+    //! 程式初始化進度條
+    int mMainLoadingValue = 0;
+    QProgressBar *mStatusProgressBar;
+
     //! 畫布
     QgsMapCanvas *mMapCanvas;
     //! 圖層管理器
@@ -153,6 +142,9 @@ class BcmsApp : public QMainWindow {
     QgsSnappingUtils *mSnappingUtils = nullptr;
     //! 單例這個類
     static BcmsApp *sInstance;
+
+    //! 修改初始化進度條值
+    void addMainLoadingValue(int i);
 
     //! 添加圖層
     void addVectorLayers(QString filePath, QString DisplayName,

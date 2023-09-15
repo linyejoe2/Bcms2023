@@ -6,6 +6,7 @@
 #include <qcheckbox.h>
 #include <qgridlayout.h>
 #include <qmessagebox.h>
+#include <qprogressbar.h>
 #include <qshortcut.h>
 
 #include <QNetworkAccessManager>
@@ -88,7 +89,32 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     ui->setupUi(this);
 
     this->showMaximized();
-    // showFullScreen();
+    mStatusProgressBar = new QProgressBar(this);
+    mStatusProgressBar->setObjectName(tr("進度條"));
+    mStatusProgressBar->setMaximumHeight(18);
+    addMainLoadingValue(int(0));
+
+    // auto mStatusBar = new QWidget(this);
+    // auto mLayout = new QHBoxLayout();
+    // mLayout->setContentsMargins(2, 0, 2, 0);
+    // mLayout->setSpacing(6);
+
+    // auto mLineEdit = new QLineEdit(QString());
+    // mLineEdit->setDisabled(true);
+    // mLineEdit->setFrame(false);
+    // mLineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    // QPalette palette = mLineEdit->palette();
+    // palette.setColor(QPalette::Disabled, QPalette::Text,
+    // QPalette::WindowText); mLineEdit->setPalette(palette);
+    // mLineEdit->setStyleSheet(
+    //     QStringLiteral("* { border: 0; background-color: rgba(0, 0, 0, 0);
+    //     }"));
+    // mLayout->addWidget(mLineEdit, 10);
+    // mStatusBar->setLayout(mLayout);
+
+    // mLayout->addWidget(mStatusProgressBar, 1, Qt::AlignLeft);
+    // mLayout->addWidget(mStatusBar, 10, Qt::AlignLeft);
+    QMainWindow::statusBar()->addWidget(mStatusProgressBar, 10);
 
     //! 布局
     QWidget *centralWidget = this->centralWidget();
@@ -129,7 +155,7 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     //! 初始化 CAD 工具
     mAdvancedDigitizingDockWidget =
         new QgsAdvancedDigitizingDockWidget(mMapCanvas, this);
-    mAdvancedDigitizingDockWidget->setWindowTitle(tr("Advanced Digitizing"));
+    mAdvancedDigitizingDockWidget->setWindowTitle(tr("高級控制工具"));
     mAdvancedDigitizingDockWidget->setObjectName(tr("AdvancedDigitizingTools"));
 
     //! 初始化矢量工具
@@ -158,8 +184,8 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
                 QgsProject::instance()->setSnappingConfig(
                     mSnappingDialog->config());
             });
-    QgsDockWidget *dock = new QgsDockWidget(
-        tr("Snapping and Digitizing Options"), BcmsApp::instance());
+    QgsDockWidget *dock =
+        new QgsDockWidget(tr("鎖點工具"), BcmsApp::instance());
     dock->setAllowedAreas(Qt::AllDockWidgetAreas);
     dock->setWidget(mSnappingDialog);
     dock->setObjectName(tr("Snapping and Digitizing Options"));
@@ -186,10 +212,13 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
     // ui->tableView->setModel(mAreaListItemModel);
 
     //! 載入圖層
+    addMainLoadingValue(int(10));
     initLayerDefine("./temp/400_0044_building.json");
+    addMainLoadingValue(int(10));
     initLandDefine("./temp/400_0044_land.json");
 
     //! 連結
+    addMainLoadingValue(int(10));
     connect(ui->actionToggle_Editing, SIGNAL(triggered()), this,
             SLOT(toggleEditing()));
     connect(ui->actionAdd_Feature, SIGNAL(triggered()), this,
@@ -221,6 +250,7 @@ BcmsApp::BcmsApp(QWidget *parent) : QMainWindow(parent), ui(new Ui::BcmsApp) {
 
     mMessageBar->pushMessage(tr("成功載入地圖！"), tr(""),
                              Qgis::MessageLevel::Info);
+    addMainLoadingValue(int(100));
 }
 
 BcmsApp::~BcmsApp() { delete ui; }
@@ -434,6 +464,8 @@ void BcmsApp::log() { qDebug() << tr("in"); }
 void BcmsApp::openMBcmsLoadForm() { mBcmsLoadForm->show(); }
 
 void BcmsApp::testFunc() {
+    qDebug() << mLayerTreeView->currentLayer()->source();
+
     try {
         auto testLand = new ILandCode();
         testLand->zon = "400";
@@ -726,16 +758,6 @@ void BcmsApp::onAreaAdd(QgsFeatureId fid) {
     mMessageBar->pushMessage(tr("法定空地範圍新增成功，請繪製其他圖層"), tr(""),
                              Qgis::MessageLevel::Info);
 
-    // !!留存紀錄  取得新增的法定空地並寫入到未存檔變更中
-    // auto areaFeature = areaLayer->getFeature(fid);
-    // auto areaObject = new IAreaObject2();
-    // areaObject->editing = true;
-    // areaObject->area = areaFeature;
-    // areaFeature.setAttribute(tr("area_key"), areaObject->areaKey);
-    // areaLayer->updateFeature(areaFeature);
-    // BcmsArea::instance().addArea(areaObject);
-    // ui->tableView->setModel(BcmsArea::instance().areaListItemModel());
-
     // 更新未存檔列表
     ui->tableView->setModel(BcmsArea::instance().areaListItemModel());
 
@@ -805,6 +827,16 @@ void BcmsApp::commitWithFixGeometryType(QgsVectorLayer &l) {
     l.rollBack();
     l.reload();
 };
+
+void BcmsApp::addMainLoadingValue(int i) {
+    mMainLoadingValue += i;
+    mMainLoadingValue = qMin(mMainLoadingValue, 100);
+    mStatusProgressBar->setValue(mMainLoadingValue);
+
+    if (mMainLoadingValue == 100)
+        QTimer::singleShot(2000, this,
+                           [this]() { mStatusProgressBar->hide(); });
+}
 
 void BcmsApp::editAllLayers() {
     for (QgsMapLayer *layer : mMapCanvasLayers) {
@@ -930,7 +962,7 @@ void BcmsApp::initLayerDefine(QString filePath) {
     try {
         auto layers = BcmsFeaturedef::instance().getIdList();
         foreach (const QString &id, *layers) {
-            // 宣告地籍圖層
+            // 宣告圖層
             const QgsVectorLayer::LayerOptions layerOptions{
                 QgsProject::instance()->transformContext()};
             QgsVectorLayer *layer = new QgsVectorLayer(
@@ -961,6 +993,7 @@ void BcmsApp::initLayerDefine(QString filePath) {
             mMapCanvas->setVisible(true);
             mMapCanvas->freeze(false);
             mMapCanvas->refresh();
+            addMainLoadingValue(1);
         }
     } catch (const std::exception &e) {
         qWarning() << e.what();

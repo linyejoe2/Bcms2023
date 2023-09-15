@@ -107,7 +107,8 @@
 			"qstandarditemmodel": "cpp",
 			"qmimedata": "cpp",
 			"quuid": "cpp",
-			"qnetworkrequest": "cpp"
+			"qnetworkrequest": "cpp",
+			"qstringliteral": "cpp"
 		},
 		"editor.quickSuggestions": {
 			"comments": true,

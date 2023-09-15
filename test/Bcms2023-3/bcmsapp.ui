@@ -26,13 +26,6 @@
      <height>30</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuedit">
-    <property name="title">
-     <string>edit</string>
-    </property>
-    <addaction name="actionToggle_Editing"/>
-   </widget>
-   <addaction name="menuedit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="layersDock">
@@ -58,6 +51,7 @@
    <addaction name="actionSelect_Rectangle"/>
    <addaction name="actionDelete_Selected"/>
    <addaction name="actionAdd_Feature_2"/>
+   <addaction name="actionUpload"/>
    <addaction name="actionTest1"/>
   </widget>
   <widget class="QDockWidget" name="areasDock">
@@ -126,7 +120,7 @@
      <property name="horizontalSpacing">
       <number>7</number>
      </property>
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="QTableView" name="tableView">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -254,6 +248,21 @@
    </property>
    <property name="toolTip">
     <string>編輯多邊形工具</string>
+   </property>
+  </action>
+  <action name="actionUpload">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/img/bcms/action_icon/publish.svg</normaloff>:/img/bcms/action_icon/publish.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Upload</string>
+   </property>
+   <property name="toolTip">
+    <string>上傳修改</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

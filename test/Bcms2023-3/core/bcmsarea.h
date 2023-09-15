@@ -15,6 +15,7 @@ struct IAreaObject2 {
     bool editing;
     QString areaKey = QUuid::createUuid().toString(QUuid::WithoutBraces);
     QgsFeature area;
+    QString filePath;
 };
 
 /**

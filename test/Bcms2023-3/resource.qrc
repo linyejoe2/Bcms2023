@@ -514,5 +514,6 @@
         <file>img/bcms/action_icon/select.svg</file>
         <file>img/bcms/action_icon/test.svg</file>
         <file>img/bcms/action_icon/travel_explore.svg</file>
+        <file>img/bcms/action_icon/publish.svg</file>
     </qresource>
 </RCC>
